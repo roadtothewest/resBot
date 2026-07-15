@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUAS 2026 — Resumen Completo</title>
+<style>
+  :root {
+    --dark: #2C3E50;
+    --blue: #2E86C1;
+    --green: #27AE60;
+    --purple: #8E44AD;
+    --orange: #E67E22;
+    --red: #C0392B;
+    --light: #F8F9FA;
+    --border: #D5D8DC;
+    --text: #2C3E50;
+    --bg: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: var(--text); background: var(--light); line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+  /* HEADER */
+  header { background: var(--dark); color: white; padding: 40px 0 30px; text-align: center; }
+  header h1 { font-size: 2.2rem; margin-bottom: 6px; letter-spacing: 1px; }
+  header .subtitle { font-size: 1rem; opacity: 0.8; }
+  header .score-badge { display: inline-block; margin-top: 14px; background: var(--blue); padding: 8px 24px; border-radius: 6px; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; }
+
+  /* NAV */
+  nav { background: white; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  nav ul { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; padding: 8px 0; }
+  nav a { text-decoration: none; color: var(--dark); font-size: 0.82rem; font-weight: 600; padding: 6px 14px; border-radius: 4px; transition: background 0.2s; }
+  nav a:hover { background: var(--light); }
+  nav a.active { background: var(--blue); color: white; }
+
+  /* SECTIONS */
+  section { padding: 36px 0 20px; }
+  section:nth-child(even) { background: white; }
+  .section-title { font-size: 1.5rem; color: var(--dark); border-bottom: 3px solid var(--blue); padding-bottom: 8px; margin-bottom: 20px; }
+
+  /* CARDS */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .card { background: white; border-radius: 8px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+  .card h3 { font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card p, .card li { font-size: 0.9rem; color: #555; }
+  .card ul { padding-left: 18px; margin-top: 6px; }
+  .card li { margin-bottom: 3px; }
+  .card .pts { font-size: 1.6rem; font-weight: 800; }
+  .card .pts.blue { color: var(--blue); }
+  .card .pts.green { color: var(--green); }
+  .card .pts.purple { color: var(--purple); }
+  .card .pts.orange { color: var(--orange); }
+  .card .pts.red { color: var(--red); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 16px; }
+  th { background: var(--dark); color: white; padding: 10px 12px; text-align: left; font-weight: 600; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: #f0f4f8; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; color: white; margin-right: 4px; }
+  .tag.power { background: var(--orange); }
+  .tag.control { background: var(--blue); }
+  .tag.vision { background: var(--green); }
+  .tag.telco { background: var(--purple); }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 30px; }
+  .timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 3px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 24px; padding-left: 24px; }
+  .timeline-item::before { content: ''; position: absolute; left: -24px; top: 6px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid white; }
+  .timeline-item.blue::before { background: var(--blue); }
+  .timeline-item.green::before { background: var(--green); }
+  .timeline-item.purple::before { background: var(--purple); }
+  .timeline-item.orange::before { background: var(--orange); }
+  .timeline-item.red::before { background: var(--red); }
+  .timeline-item h4 { font-size: 0.95rem; margin-bottom: 4px; }
+  .timeline-item p { font-size: 0.85rem; color: #555; }
+  .timeline-item .weeks { font-size: 0.75rem; color: #888; font-weight: 600; }
+
+  /* CHECKLIST */
+  .checklist { columns: 2; column-gap: 24px; list-style: none; }
+  .checklist li { break-inside: avoid; padding: 6px 0 6px 24px; position: relative; font-size: 0.88rem; border-bottom: 1px dotted var(--border); }
+  .checklist li::before { content: '☐'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+
+  /* SCORING BAR */
+  .score-bar { height: 28px; border-radius: 6px; overflow: hidden; display: flex; margin: 12px 0; font-size: 0.7rem; font-weight: 700; color: white; text-align: center; }
+  .score-bar div { display: flex; align-items: center; justify-content: center; }
+
+  /* PHASE BADGES */
+  .phase-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: white; margin: 2px 4px 2px 0; }
+  .phase-badge.b1 { background: var(--blue); }
+  .phase-badge.b2 { background: var(--green); }
+  .phase-badge.b3 { background: var(--purple); }
+  .phase-badge.b4 { background: var(--orange); }
+  .phase-badge.b5 { background: var(--red); }
+
+  /* SPRINT TABLE */
+  .sprint-table th { font-size: 0.78rem; padding: 8px 10px; }
+  .sprint-table td { font-size: 0.8rem; padding: 8px 10px; }
+  .sprint-table .sprint-id { font-weight: 800; white-space: nowrap; }
+
+  /* FOOTER */
+  footer { background: var(--dark); color: white; text-align: center; padding: 20px 0; font-size: 0.82rem; opacity: 0.9; }
+  footer a { color: var(--blue); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    header h1 { font-size: 1.5rem; }
+    .checklist { columns: 1; }
+    nav ul { gap: 2px; }
+    nav a { font-size: 0.72rem; padding: 4px 8px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  /* MISC */
+  .highlight { background: #FFF3CD; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+  .note { background: #D6EAF8; border-left: 4px solid var(--blue); padding: 10px 14px; margin: 12px 0; border-radius: 0 4px 4px 0; font-size: 0.85rem; }
+  h4 { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header>
+  <div class="container">
+    <h1>SUAS 2026 — Competition Roadmap</h1>
+    <div class="subtitle">Technology in Action for Recovery and Relief &bull; Tulsa, OK</div>
+    <div class="score-badge">PUNTUACIÓN MÁXIMA: 1,250 PTS</div>
+  </div>
+</header>
+
+<!-- ===================== NAV ===================== -->
+<nav>
+  <div class="container">
+    <ul>
+      <li><a href="#scoring">Scoring</a></li>
+      <li><a href="#mision">Misión</a></li>
+      <li><a href="#requisitos">Requisitos UAS</a></li>
+      <li><a href="#entregables">Entregables</a></li>
+      <li><a href="#roadmap">Roadmap 6 Meses</a></li>
+      <li><a href="#modulos">Módulos</a></li>
+      <li><a href="#sprints">Sprints</a></li>
+      <li><a href="#penalizaciones">Penalizaciones</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===================== SCORING ===================== -->
+<section id="scoring">
+  <div class="container">
+    <h2 class="section-title">Desglose de Puntuación</h2>
+
+    <div class="score-bar">
+      <div style="width:12%; background:var(--blue);">TDR 150</div>
+      <div style="width:8%; background:var(--blue); opacity:0.7;">Web 100</div>
+      <div style="width:20%; background:var(--green);">Endurance 250</div>
+      <div style="width:16%; background:var(--green); opacity:0.85;">Operators 200</div>
+      <div style="width:16%; background:var(--purple);">Rapid 200</div>
+      <div style="width:12%; background:var(--purple); opacity:0.85;">Risk Map 150</div>
+      <div style="width:16%; background:var(--orange);">SDD 200</div>
+    </div>
+
+    <div class="card-grid">
+      <!-- DOCUMENTACIÓN -->
+      <div class="card">
+        <h3><span class="pts blue">250</span> Documentación</h3>
+        <ul>
+          <li><strong>TDR (Paper IEEE)</strong> — 150 pts<br><span style="font-size:0.8rem">Abstract, Competition Strategy (25%), Design Strategy (25%), Testing Strategy (25%), References, Test Plan &amp; Results. 10 págs, formato IEEE.</span></li>
+          <li><strong>Website</strong> — 100 pts<br><span style="font-size:0.8rem">Team info (20%), Vehicle Design Docs (40%), Website Quality (40%). Responsive, W3C, inglés.</span></li>
+        </ul>
+      </div>
+
+      <!-- FLIGHT ENDURANCE -->
+      <div class="card">
+        <h3><span class="pts green">250</span> Flight Endurance</h3>
+        <p>Fórmula: <code>200×(N<sub>L</sub>/10)²</code></p>
+        <ul>
+          <li>Takeoff + Landing: <strong>20 pts</strong></li>
+          <li>Autónomo (takeoff + landing): <strong>+30 pts</strong></li>
+          <li>10 laps = 200 pts (máx)</li>
+          <li>Cada lap ≈ 2 millas → autonomía para 20+ millas</li>
+        </ul>
+      </div>
+
+      <!-- EFFICIENT OPERATORS -->
+      <div class="card">
+        <h3><span class="pts green">200</span> Efficient Operators</h3>
+        <p>Fórmula: <code>200×min(1,(4−O)/2)</code></p>
+        <ul>
+          <li><strong>2 operadores = 200 pts</strong> (máx)</li>
+          <li>Solo: Safety Pilot + GCS Operator</li>
+          <li>Non-operators: solo observan + teardown</li>
+        </ul>
+      </div>
+
+      <!-- DESIGN FOR RAPID RESPONSE -->
+      <div class="card">
+        <h3><span class="pts purple">200</span> Design for Rapid Response</h3>
+        <ul>
+          <li>Peso ≤15 LBs → <strong>50 pts</strong> (fórmula: 50×min(1,(35−W)/20))</li>
+          <li>Personal Item 18×14×8 in → <strong>50 pts</strong></li>
+          <li>Tool-less assembly → <strong>25 pts</strong></li>
+          <li>Batteries &lt;100Wh → <strong>75 pts</strong></li>
+        </ul>
+      </div>
+
+      <!-- RISK MAPPING -->
+      <div class="card">
+        <h3><span class="pts purple">150</span> Risk Mapping</h3>
+        <p>Mapa .png/.jpeg del Search Boundary (~10 acres). Calidad profesional (Google Maps-like). Evaluado por: coverage, projection, stitching, resolución.</p>
+        <ul>
+          <li>Alta calidad → ~150 pts</li>
+          <li>Media calidad → ~75 pts</li>
+          <li>Insuficiente → 0 pts</li>
+        </ul>
+      </div>
+
+      <!-- SEARCH DETECT DELIVER -->
+      <div class="card">
+        <h3><span class="pts orange">200</span> Search, Detect &amp; Deliver</h3>
+        <ul>
+          <li><strong>2 entregas:</strong> beacon → tent (100), water → mannequin (100)</li>
+          <li>Survives: 20 pts</li>
+          <li>Within 50' del target: 50 pts</li>
+          <li>Correct target: 30 pts</li>
+          <li>Requiere ≥1 waypoint lap antes de deliveries</li>
+          <li>Payload ≤2lbs, sin capacidad de vuelo sostenido</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MISSION ===================== -->
+<section id="mision">
+  <div class="container">
+    <h2 class="section-title">Flujo de la Misión</h2>
+    <div class="note">45 minutos de Mission Time. Setup + misión + teardown. El orden de tareas es fijo: waypoints primero, luego Risk Mapping, luego Deliveries.</div>
+
+    <div class="card-grid" style="margin-top:16px;">
+      <div class="card" style="text-align:center;">
+        <h3 style="justify-content:center;">1. Takeoff</h3>
+        <p>Manual o autónomo hasta 150ft AGL. Autónomo = 1 solo comando.</p>
+        <div class="pts green" style="margin-top:8px;">50 pts</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="justify-content:center;">2. Waypoint Laps</h3>
+        <p>1-10 laps. Error &lt;100'. Turn radius ≤150'. Climb/descent ≤20°.</p>
+        <div class="pts green" style="margin-top:8px;">hasta 200 pts</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="justify-content:center;">3. Risk Mapping</h3>
+        <p>Ortofoto del Search Boundary. Stitching, resolución profesional.</p>
+        <div class="pts purple" style="margin-top:8px;">hasta 150 pts</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="justify-content:center;">4. Deliveries</h3>
+        <p>Beacon → tent. Water → mannequin. Retardant mechanism obligatorio.</p>
+        <div class="pts orange" style="margin-top:8px;">hasta 200 pts</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="justify-content:center;">5. Landing</h3>
+        <p>Manual o autónomo. Sin daño al UAS ni al entorno.</p>
+        <div class="pts green" style="margin-top:8px;">incluido</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="justify-content:center;">6. Teardown</h3>
+        <p>10 minutos para retirar todo del flight line.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REQUISITOS UAS ===================== -->
+<section id="requisitos">
+  <div class="container">
+    <h2 class="section-title">Requisitos Obligatorios del UAS (Safety Inspection)</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>Estructura</h3>
+        <ul class="checklist">
+          <li>Peso max: 35 LBs (ideal ≤15 LBs para max pts)</li>
+          <li>Heavier-than-air, no tethers, free flying</li>
+          <li>Solo baterías LiPo, cada una &lt;100Wh</li>
+          <li>Baterías brightly colored, fáciles de extraer</li>
+          <li>No FOD — nada se suelta excepto payloads de delivery</li>
+          <li>Prop arc: disconnect físico de potencia (no software disarm)</li>
+          <li>Todos los fasteners con safety wire, Loctite o nylon nuts</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Autonomía &amp; Failsafes</h3>
+        <ul class="checklist">
+          <li>RTH/RTL activable por Safety Pilot Y GCS Operator</li>
+          <li>Flight termination activable por Safety Pilot Y GCS Operator</li>
+          <li>Auto RTH tras <strong>15s</strong> sin comms</li>
+          <li>Auto flight termination tras <strong>90s</strong> sin comms</li>
+          <li>Obstacle avoidance (mín. 2 UAS en airspace compartido)</li>
+          <li>No dependency en internet/cloud para safety functionality</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>GCS (Ground Control Station)</h3>
+        <ul class="checklist">
+          <li>Mapa con flight boundaries, posición UAS</li>
+          <li>Ground speed en <strong>knots</strong></li>
+          <li>Altitud AGL en <strong>pies</strong></li>
+          <li>Siempre visible por jueces durante misión</li>
+          <li>Operación local sin dependencia de internet</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Legal &amp; Compliance</h3>
+        <ul class="checklist">
+          <li>FAA DroneZone registration + número en superficie externa</li>
+          <li>Remote ID module (unique ID + position)</li>
+          <li>Safety Pilot: certificado TRUST</li>
+          <li>RF compliance FCC (frequency hopping recomendado)</li>
+          <li>75%+ miembros son estudiantes a tiempo completo</li>
+          <li>Mínimo 2 operadores: Safety Pilot + GCS Operator</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENTREGABLES ===================== -->
+<section id="entregables">
+  <div class="container">
+    <h2 class="section-title">Entregables Pre-Competición</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Entregable</th>
+          <th>Deadline</th>
+          <th>Detalles Clave</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Proof of Flight Readiness Video</strong></td>
+          <td>22 Jul 2026</td>
+          <td>5 min. Takeoff autónomo &gt;50ft, 1+ milla a peso completo, waypoints error &lt;100', turn radius ≤150', climb/descent ≤20°, landing. Hosted (YouTube/Vimeo). Inglés o con subtítulos.</td>
+        </tr>
+        <tr>
+          <td><strong>Proof of Pilot Competence Video</strong></td>
+          <td>22 Jul 2026</td>
+          <td>3 min. Takeoff manual &gt;50ft, vuelo manual a &gt;1000ft del piloto, aterrizaje manual. Múltiples Safety Pilots = múltiples videos.</td>
+        </tr>
+        <tr>
+          <td><strong>Technical Design Report (TDR)</strong></td>
+          <td>Según timeline</td>
+          <td>Paper IEEE, 10 págs. Abstract, Acknowledgements, Competition Strategy (25%), Design Strategy (25%), Testing Strategy (25%), References, Test Plan &amp; Results (appendix). Peer-reviewed.</td>
+        </tr>
+        <tr>
+          <td><strong>Team Website</strong></td>
+          <td>Según timeline</td>
+          <td>Team info, vehicle photos/video, procedures, blogs, sponsors. Responsive, W3C accessible, inglés, búsqueda, cross-browser.</td>
+        </tr>
+        <tr>
+          <td><strong>Team Registration + Vehicle Info</strong></td>
+          <td>Temprano</td>
+          <td>75%+ estudiantes. Specs del UAS. Demographics.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>Diferencia entre los dos videos:</strong> El <em>Proof of Flight Readiness</em> demuestra que el <strong>UAS puede volar autónomamente</strong> (waypoints, endurance, tolerancias). El <em>Proof of Pilot Competence</em> demuestra que el <strong>Safety Pilot puede operar manualmente</strong> el UAS a distancias de seguridad. Son habilidades complementarias: autonomía del sistema vs. competencia humana.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROADMAP ===================== -->
+<section id="roadmap">
+  <div class="container">
+    <h2 class="section-title">Roadmap — 6 Meses / 12 Sprints Biweekly</h2>
+
+    <div class="timeline">
+      <!-- MES 1 -->
+      <div class="timeline-item blue">
+        <span class="weeks">Semanas 1–4</span>
+        <h4><span class="phase-badge b1">Mes 1</span> Foundation &amp; Architecture</h4>
+        <p>Definir arquitectura UAS, seleccionar autopilot (ArduPilot/PX4), setup SITL, definir stack de comunicaciones, diseñar sistema de powerbank, setup entorno de visión (OpenCV/YOLO), documentación GCS y Remote ID.</p>
+      </div>
+
+      <!-- MES 2 -->
+      <div class="timeline-item blue">
+        <span class="weeks">Semanas 5–8</span>
+        <h4><span class="phase-badge b1">Mes 2</span> Subsystems Development</h4>
+        <p>SITL: RTH/RTL, fail-safes (15s/90s), misiones de 10 laps. Pruebas stitching/ortofoto. Detección YOLO para targets. Desarrollo UI GCS. Prototipo RF/antenas. Encriptación enlace. Evaluación BMS/conectores. Checklist LiPo. Restricciones peso.</p>
+      </div>
+
+      <!-- MES 3 -->
+      <div class="timeline-item green">
+        <span class="weeks">Semanas 9–12</span>
+        <h4><span class="phase-badge b2">Mes 3</span> Integration &amp; First Flights</h4>
+        <p>Recepción baterías. Integrar SBC + FC. Test motores RC. Primer vuelo hover/estabilización. Pruebas waypoints en campo abierto. Cálculo consumo real. Enlace telemetría real. Auto-RTH tras 15s.</p>
+      </div>
+
+      <!-- MES 4 -->
+      <div class="timeline-item purple">
+        <span class="weeks">Semanas 13–16</span>
+        <h4><span class="phase-badge b3">Mes 4</span> Mission Rehearsal &amp; Deliverables</h4>
+        <p>Prueba endurance real (3-5 laps). Delivery drops. Risk mapping real. <strong>Grabar Proof of Flight Readiness Video (5 min).</strong> <strong>Grabar Proof of Pilot Competence Video (3 min).</strong> Battery Audit. Verificación Remote ID.</p>
+      </div>
+
+      <!-- MES 5 -->
+      <div class="timeline-item orange">
+        <span class="weeks">Semanas 17–20</span>
+        <h4><span class="phase-badge b4">Mes 5</span> Optimization &amp; Documentation</h4>
+        <p><strong>Redactar TDR (Paper IEEE).</strong> Peer review. <strong>Website completo:</strong> blogs, fotos, sponsors, procedures, W3C. Upload a producción. Ajustes post-mejoras aerodinámicas. Métricas para paper.</p>
+      </div>
+
+      <!-- MES 6 -->
+      <div class="timeline-item red">
+        <span class="weeks">Semanas 21–24</span>
+        <h4><span class="phase-badge b5">Mes 6</span> Final Preparation — Tulsa</h4>
+        <p>Simulacro full misión (&lt;45 min). Mock safety inspection: baterías, safety wire, Loctite, peso. Ensayo tool-less assembly (&lt;3 min). Empaquetado Personal Item (18×14×8). Calibration backups. Config antenas respaldo. <strong>Viaje Tulsa, OK.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MODULOS ===================== -->
+<section id="modulos">
+  <div class="container">
+    <h2 class="section-title">Módulos del Equipo</h2>
+
+    <div class="card-grid">
+      <div class="card" style="border-left: 5px solid var(--blue);">
+        <h3><span class="tag control">CONTROL</span> Prioridad #1</h3>
+        <p><strong>Responsable:</strong> ?</p>
+        <ul>
+          <li>Autopilot config (ArduPilot/PX4)</li>
+          <li>SITL/HIL tests</li>
+          <li>Waypoint following (error &lt;100')</li>
+          <li>Takeoff/Landing autónomo</li>
+          <li>Failsafes: RTH, flight termination</li>
+          <li>Obstacle avoidance</li>
+          <li>Grabar videos oficiales</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-left: 5px solid var(--orange);">
+        <h3><span class="tag power">POWERBANK</span></h3>
+        <p><strong>Responsable:</strong> ?</p>
+        <ul>
+          <li>Cálculos energía (&lt;100Wh por pack)</li>
+          <li>Autonomía 10+ laps (20+ millas)</li>
+          <li>Weight budget ≤15 LBs</li>
+          <li>BMS / conectores de seguridad</li>
+          <li>Charging system</li>
+          <li>Battery docs (MSDS, bright colors)</li>
+          <li>Protocolo LiPo safe</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-left: 5px solid var(--green);">
+        <h3><span class="tag vision">VISION</span></h3>
+        <p><strong>Responsable:</strong> ?</p>
+        <ul>
+          <li>Cámaras + pipeline de captura</li>
+          <li>Risk mapping pipeline (stitching)</li>
+          <li>Target detection (mannequin + tent)</li>
+          <li>YOLO / Detección de objetos</li>
+          <li>Delivery guidance</li>
+          <li>Optimización latencia</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-left: 5px solid var(--purple);">
+        <h3><span class="tag telco">TELCO</span></h3>
+        <p><strong>Responsable:</strong> ?</p>
+        <ul>
+          <li>MavLink / RF comms</li>
+          <li>GCS display (mapa, speed, alt)</li>
+          <li>Encryption / freq hopping</li>
+          <li>Failsafe comms loss (15s/90s)</li>
+          <li>Remote ID module</li>
+          <li>Telemetry logging</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SPRINTS ===================== -->
+<section id="sprints">
+  <div class="container">
+    <h2 class="section-title">Sprints Detallados (12 × 2 semanas)</h2>
+
+    <table class="sprint-table">
+      <thead>
+        <tr>
+          <th>Sprint</th>
+          <th>Mes</th>
+          <th>⚡ Powerbank</th>
+          <th>🎮 Control</th>
+          <th>👁️ Vision</th>
+          <th>📡 Telco</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="sprint-id" style="background:#EBF5FB;">S1</td>
+          <td rowspan="2" style="background:#EBF5FB; font-weight:600; vertical-align:middle;">Mes 1<br><small>Foundation</small></td>
+          <td>Specs baterías LiPo &lt;100Wh. Cotización/Selección baterías y diseño de carga.</td>
+          <td>Definir arquitectura (ArduPilot/PX4) y setup SITL. Pruebas compilación y entorno virtual.</td>
+          <td>Diseñar arquitectura pipeline de captura. Setup entorno visión (OpenCV/YOLO).</td>
+          <td>Definir stack comunicaciones (MavLink, RF, Cifrado). Doc arquitectura GCS y Remote ID.</td>
+        </tr>
+        <tr>
+          <td class="sprint-id" style="background:#EBF5FB;">S2</td>
+          <td>Estimación consumo (10 laps / 20 mi). Diseño power board / cableado teórico.</td>
+          <td>Lógica Auto-Takeoff/Landing en simulación. Waypoints estáticos (error &lt;100').</td>
+          <td>Selección cámaras + pruebas dataset sintético. Pipeline metadata para fotos.</td>
+          <td>Setup GCS display map + telemetry simulada. Pruebas enlace datos (Mavlink router).</td>
+        </tr>
+
+        <tr>
+          <td class="sprint-id" style="background:#EBF5FB;">S3</td>
+          <td rowspan="2" style="background:#EBF5FB; font-weight:600; vertical-align:middle;">Mes 2<br><small>Subsystems</small></td>
+          <td>Revisión normativas (bright colors, MSDS). Evaluación BMS / conectores seguridad.</td>
+          <td>SITL: RTH/RTL simulado (Fail-safes 15s/90s). Simular misiones 10 laps (autonomía base).</td>
+          <td>Pruebas iniciales stitching / ortofoto. Modelo YOLO detección targets (Tent/Mannequin).</td>
+          <td>Implementar failsafes GCS (auto flight termination). Desarrollo UI GCS (Alt, Pos, Bounds).</td>
+        </tr>
+        <tr>
+          <td class="sprint-id" style="background:#EBF5FB;">S4</td>
+          <td>Manuales y safety checklist LiPo. Revisión restricciones peso (&lt;15 LBs).</td>
+          <td>Obstacle avoidance en SITL (vehículos multi). Simulación completa Misión SUAS.</td>
+          <td>Optimización frames y latencia captura. Detección objetos con simulación altura real.</td>
+          <td>Prototipo red RF / configuración antenas (simuladas). Pruebas encriptación GCS-SBC.</td>
+        </tr>
+
+        <tr>
+          <td class="sprint-id" style="background:#E8F8F5;">S5</td>
+          <td rowspan="2" style="background:#E8F8F5; font-weight:600; vertical-align:middle;">Mes 3<br><small>Integration</small></td>
+          <td>Recepción baterías: pruebas capacidad y descarga. Pruebas conectores, cableado motores (bench).</td>
+          <td>Integrar SBC + FC. Config bench pruebas. Test motores y respuesta RC manual.</td>
+          <td>Test captura con cámara real. Integración cámara con SBC.</td>
+          <td>Enlace real telemetría (SBC ↔ GCS) alcance corto. Test telemetría y Video Feed GCS.</td>
+        </tr>
+        <tr>
+          <td class="sprint-id" style="background:#E8F8F5;">S6</td>
+          <td>Cálculo consumo real (bench test estático). Pruebas fail-over y protecciones eléctricas.</td>
+          <td>Primer vuelo Hover / estabilización. Pruebas Waypoints en vuelo abierto.</td>
+          <td>Prueba captura imágenes en vuelo estático/corto. Test Risk Mapping (baja altitud).</td>
+          <td>Verificar GCS: Speed, Alt, Posición real. Test desconexión: Auto-RTH a los 15s.</td>
+        </tr>
+
+        <tr>
+          <td class="sprint-id" style="background:#F4ECF7;">S7</td>
+          <td rowspan="2" style="background:#F4ECF7; font-weight:600; vertical-align:middle;">Mes 4<br><small>Rehearsal</small></td>
+          <td>Prueba Endurance real (3-5 laps). Prueba mecanismo liberación (Delivery 2 LBs).</td>
+          <td>Test Flight radius (&lt;150') y climb (&lt;20°). Delivery drops: beacon &amp; water.</td>
+          <td>Generación mapa Risk Mapping real + Detección Targets. Optimización stitching.</td>
+          <td>Test Auto Flight Termination (90s sin comms). Verificación Freq Hopping (FCC).</td>
+        </tr>
+        <tr>
+          <td class="sprint-id" style="background:#F4ECF7;">S8</td>
+          <td>Battery Audit: ajustar para 10 Laps. Carga baterías repuesto y protocolo rápido.</td>
+          <td><strong>Grabar Proof of Flight Readiness (5 min).</strong><br><strong>Grabar Proof of Pilot Competence (3 min).</strong></td>
+          <td>Grabar operaciones GCS para video. Refinar entrega (&lt;50' del target).</td>
+          <td>Asegurar display telemetría para Proof Video. Verificar Remote ID funcionando.</td>
+        </tr>
+
+        <tr>
+          <td class="sprint-id" style="background:#FDF2E9;">S9</td>
+          <td rowspan="2" style="background:#FDF2E9; font-weight:600; vertical-align:middle;">Mes 5<br><small>Documentation</small></td>
+          <td>Medición consumo real post-mejoras aerodinámicas. Actualizar info baterías para Paper IEEE.</td>
+          <td><strong>Redactar TDR: Design &amp; Testing Strategy.</strong><br><strong>Redactar TDR: Competition Strategy.</strong></td>
+          <td>Ajustes falsos positivos detección. Métricas Risk mapping para TDR.</td>
+          <td>Revisión latencias y estabilidad log GCS. Integrar arquitectura Red en TDR.</td>
+        </tr>
+        <tr>
+          <td class="sprint-id" style="background:#FDF2E9;">S10</td>
+          <td>Revisión protocolos térmicos LiPo para Website. Finalizar Specs Vehicle Info.</td>
+          <td>Blogs de progreso para Website. Peer Review TDR y envío entregables.</td>
+          <td>Preparar fotos/videos visión para Website. Upload Website a producción.</td>
+          <td>Revisión accesibilidad W3C del Website. Final test GCS local (sin internet).</td>
+        </tr>
+
+        <tr>
+          <td class="sprint-id" style="background:#FDEDEC;">S11</td>
+          <td rowspan="2" style="background:#FDEDEC; font-weight:600; vertical-align:middle;">Mes 6<br><small>Final Prep</small></td>
+          <td>Simulacro Full Endurance (10 laps/20 millas). Mock Inspección: Baterías (Marcas, Wh, Conex).</td>
+          <td>Simulacro Full Misión en &lt;45 min. Mock Inspección: Safety Wire, Loctite, Peso (&lt;15lbs).</td>
+          <td>Simulacro Delivery and mapping. Validación Risk Mapping Quality (.png/.jpeg).</td>
+          <td>Simulacro completo Comms Loss recovery. Mock Inspección: GCS Check and Remote ID.</td>
+        </tr>
+        <tr>
+          <td class="sprint-id" style="background:#FDEDEC;">S12</td>
+          <td>Ensayo ensamblaje Tool-less (&lt;3 min). Logística LiPo para vuelo aéreo.</td>
+          <td>Ensayo empaquetado (Personal Item 18×14×8). Viaje Tulsa, OK y setup final.</td>
+          <td>Calibration backups (Cámaras/Lentes). Verificación algoritmos in-situ.</td>
+          <td>Configuración antenas de respaldo. Check RF local frequencies.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== PENALIZACIONES ===================== -->
+<section id="penalizaciones">
+  <div class="container">
+    <h2 class="section-title">Penalizaciones</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Infraacción</th>
+          <th>Penalización</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Excess Time (&gt;45 min)</td><td>0.5% de puntos demo por cada segundo</td></tr>
+        <tr><td>Cosas se caen del UAS en vuelo</td><td>10% de puntos demo por item</td></tr>
+        <tr><td>Crash / Colisión</td><td>50% de puntos demo</td></tr>
+        <tr><td>Operaciones inseguras</td><td>50% de puntos demo</td></tr>
+        <tr><td>Out of Bounds (crítico)</td><td>Terminación de misión</td></tr>
+        <tr><td>Manual takeover</td><td>Restart lap (volver al inicio del waypoint)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note" style="margin-top:16px;">
+      <strong>Importante:</strong> Las penalizaciones NO tienen tope. Si superan los puntos obtenidos, el equipo recibe 0 para la demo. No se pueden sumar puntos mientras se genera una penalización.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="container">
+    <p>SUAS 2026 — Tulsa, OK &bull; robocation.org/suas &bull; competitions@robonation.org &bull; 850.642.0536</p>
+    <p style="margin-top:4px; opacity:0.7;">Generado desde Carta_Gantt.xlsx + roadmap_suas_6meses.md + apuntes_handbook_suas.txt</p>
+  </div>
+</footer>
+
+</body>
+</html>
