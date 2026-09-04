@@ -1,0 +1,206 @@
+\documentclass[letterpaper,11pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[margin=1in]{geometry}
+\usepackage[final]{graphicx}
+\usepackage[sc]{mathpazo}
+\usepackage{amsmath}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes, calc}
+\usepackage{fancyhdr}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdftitle={Boceto de Arquitectura SUAS},
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lfoot{ \fancyplain{}{\texttt{}} }
+\rfoot{ \fancyplain{}{\thepage} }
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\usepackage{float}
+
+\begin{document}
+
+\begin{center}
+\vspace{-0.2cm}
+\noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+\vspace{0.2cm}
+\textsc{Proyecto \textit{quadcopter} para SUAS }\\
+\vspace{0.1cm}
+\huge{\textsc{Boceto de Arquitectura resBot}}\\
+\vspace{0.4cm}
+\normalsize{\textsc{Vicente Andrade, Antonio Avendaño, Cristóbal Fuentes, Alejandro Mena}}
+\vspace{-0.2cm}\\
+\noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+\end{center}
+
+\vspace{1cm}
+
+\section*{Diagrama de Arquitectura}
+
+\vspace{0.5cm}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.8cm and 2.5cm,
+    block/.style={
+        rectangle, draw, thick,
+        minimum width=3cm, minimum height=1.5cm,
+        align=center, font=\sffamily, fill=gray!10
+    },
+    line/.style={draw, thick},
+    arrow/.style={draw, thick, -{Latex[length=2.5mm]}},
+    darrow/.style={draw, thick, {Latex[length=2.5mm]}-{Latex[length=2.5mm]}}
+]
+
+% Nodos principales
+\node[block] (pms) {\hyperlink{sec:pms}{Power Managment Supply}};
+\node[block, below=2cm of pms] (telco) {\hyperlink{sec:telco}{MCU Telecomunicaciones}};
+\node[block, right=2.5cm of telco] (raxa) {\hyperlink{sec:radxa}{Radxa Zero 3w}};
+\node[block, left=2.5cm of telco] (sec) {\hyperlink{sec:control}{MCU Control Secundario}};
+
+% Nodos inferiores
+\node[block, below=1.8cm of raxa] (gimbal) {\hyperlink{sec:camara}{Gimbal / Cámara}};
+\node[block, below=1.8cm of telco] (lora) {\hyperlink{sec:lora}{Módulo LoRa}};
+
+% Múltiples módulos FOC (efecto de apilamiento para representar 4 módulos)
+\node[block, below=1.8cm of sec, xshift=-0.3cm, yshift=-0.3cm] (foc4) {};
+\node[block, below=1.8cm of sec, xshift=-0.2cm, yshift=-0.2cm] (foc3) {};
+\node[block, below=1.8cm of sec, xshift=-0.1cm, yshift=-0.1cm] (foc2) {};
+\node[block, below=1.8cm of sec] (foc1) {\hyperlink{sec:foc}{FOC}};
+
+% --- Conexiones ---
+
+% Conexiones de Alimentación desde PMS
+% A MCU Telco (Centro)
+\draw[arrow] (pms) -- node[right] {3V3} (telco);
+
+% A Raxa (5V) (Derecha)
+\draw[arrow] ([xshift=0.5cm]pms.south) -- ++(0,-0.7) -| node[pos=0.25, above] {5V} (raxa.north);
+
+% A MCU Control Secundario (3V3) (Izquierda)
+\draw[arrow] ([xshift=-0.5cm]pms.south) -- ++(0,-0.7) -| node[pos=0.25, above] {3V3} (sec.north);
+
+% Conexiones SPI (Comunicación)
+% Telco <-> Raxa
+\draw[darrow] (telco) -- node[above] {SPI} (raxa);
+
+% Telco <-> MCU Control Secundario
+\draw[darrow] (sec) -- node[above] {SPI} (telco);
+
+% Telco <-> LoRa
+\draw[darrow] (telco) -- node[right] {SPI} (lora);
+
+% Símbolo de antena para LoRa
+\draw[thick] (lora.south east) -- ++(0.4, -0.4) coordinate (ant);
+\draw[thick] (ant) -- ++(0, 0.5) coordinate (ant_top);
+\draw[thick] (ant_top) -- ++(-0.2, 0.2);
+\draw[thick] (ant_top) -- ++(0.2, 0.2);
+\draw[thick] (ant_top) -- ++(0, 0.25);
+
+% Conexión Raxa a Gimbal/Cámara
+\draw[darrow] (raxa) -- node[right] {MIPI CSI-2} (gimbal);
+
+% Conexión MCU Secundario a FOC (4 buses SPI)
+\draw[arrow] (sec) -- coordinate (midfoc) (foc1.north);
+% Símbolo de bus (diagonal)
+\draw[thick] ($(midfoc)+(-0.15,-0.15)$) -- ($(midfoc)+(0.15,0.15)$);
+\node[left=0.15cm of midfoc, font=\sffamily] {4};
+\node[right=0.15cm of midfoc, font=\sffamily] {SPI};
+
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+% Secciones de destino (hypertargets)
+\section{Power Management Supply} \hypertarget{sec:pms}{}
+\begin{itemize}
+    \item \textbf{Queda diseñar el módulo de alimentación} (Baterías para alimentación independiente).
+    \item Conexiones: Entrega 5 [V] a la Radxa Zero 3W y 3.3 [V] a la MCU Control Secundario y a la MCU Telecomunicaciones.
+\end{itemize}
+
+\section{MCU de Telecomunicaciones} \hypertarget{sec:telco}{}
+\begin{itemize}
+    \item Se propone una ESP32 (\textbf{Queda revisar el modelo}).
+    \item Conexiones: SPI a Radxa, MCU Control Secundario y Módulo LoRa.
+\end{itemize}
+
+\section{Radxa Zero 3W} \hypertarget{sec:radxa}{}
+\begin{itemize}
+    \item Dedicado principalmente al procesamiento digital de imágenes para cámara.
+    \item Posee un procesador de cuatro núcleos (SoC) Rockchip RK3566 de bajo consumo que a la vez posee una NPU de 0.8 TOPS integrada.
+    \item \textbf{*Boceto de funcionamiento:} Ejecutar YOLO convertido al formato Rockchip (RKNN) y utilizar OpenCV solo para capturar fotogramas y dibujar las \textit{bounding boxes}.
+    \item \textbf{Queda revisar: 4-8GB de RAM (LPDDR4)} para cargar SO, capturar video HD y mantener los tensores YOLO en memoria.
+    \item Conexiones: SPI al Módulo de Telecomunicaciones y MIPI CSI-2 a la cámara mediante FPC.
+\end{itemize}
+
+\section{MCU de Control Secundario} \hypertarget{sec:control}{}
+\begin{itemize}
+    \item \textbf{El desarrollo de este módulo será el enfoque del ramo ELO301}
+    \item \textbf{Queda revisar el MCU que se utilizará.}
+    \item Conexiones: SPI a 4 Módulos FOC y a Módulo Telecomunicaciones.
+\end{itemize}
+
+\section{Módulo LoRa} \hypertarget{sec:lora}{}
+\begin{itemize}
+    \item Se propone un circuito integrado Semtech SX1262 a $\sim$ 915 [MHz] (Alcance de 15-20 [km]) para recibir comandos remotos y transmitir \textbf{datos}.
+    \item \textbf{Queda revisar módulos comerciales (Ebyte, Hope RF, Waveshare).}
+    \item Conexiones: SPI a Módulo Telecomunicaciones.
+\end{itemize}
+
+\section{Gimbal y Cámara} \hypertarget{sec:camara}{}
+\begin{itemize}
+    \item \textbf{Queda revisar el sensor a utilizar (Ej: IMX519-16MP, IMX477-12MP), el módulo que posea este sensor y si este posee un  conector FPC con separación entre pines de 0.5 [mm] para Radxa. Revisar si se optará por utilizar un lente teleobjetivo (Zoom óptico).} 
+\end{itemize}
+
+\section{Módulos FOC} \hypertarget{sec:foc}{}
+\begin{itemize}
+    \item \textbf{Queda revisar diseño e implementación de módulos FOC.}
+    \item \textbf{Queda revisar si se utilizará un Gimbal finalmente y si es el caso, cuál se utilizará.}
+\end{itemize}
+
+\newpage
+\section*{Enlaces a Componentes}
+\begin{itemize}
+    \item \href{https://radxa.com/products/zeros/zero3w/#techspec}{Radxa Zero 3w}, Single Board Computer
+    \item \href{https://www.semtech.com/products/wireless-rf/lora-connect/sx1262}{SX1262}, LoRa Transceiver
+\end{itemize}
+
+\section*{Componentes a evaluar:}
+\subsection*{Cámara}
+    \begin{itemize}
+        \item \href{https://www.arducam.com/imx519-autofocus-camera-module-for-raspberry-pi-arducam-b0371.html}{IMX519-16MP} de Arducam
+        \item \href{https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/12MP-IMX477/#supported-operating-systems}{IMX477-12MP} de Arducam
+    \end{itemize}
+
+\newpage
+\section*{Glosario}
+\begin{itemize}
+    \item \textbf{CSI}: Camera Serial Interface
+    \item \textbf{FOC}: Field Oriented Control
+    \item \textbf{FPC}: Flexible Printed Circuit
+    \item \textbf{MCU}: MicroController Unit
+    \item \textbf{NPU}: Neural Processing Unit
+    \item \textbf{OS}: Operative System
+    \item \textbf{PMS}: Power Management Supply 
+    \item \textbf{RKNN}: Rockchip Neural Network
+    \item \textbf{SoC}: System On a Chip
+    \item \textbf{SPI}: Serial Peripheral Interface
+    \item \textbf{TOPS}: Tera Operations per second
+    \item \textbf{YOLO}: \textit{You Only Look Once} (Algoritmo de Visión Computacional)
+\end{itemize}
+
+\end{document}
