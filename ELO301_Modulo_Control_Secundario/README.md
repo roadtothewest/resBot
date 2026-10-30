@@ -10,7 +10,8 @@ motherboard junto a la Radxa Zero 3W. Implementa el [Documento de Diseño v5](do
 | Esquemático | 4 hojas, 68 componentes |
 | ERC | **0 errores**, 3 advertencias esperadas* |
 | Componentes | Cada uno con huella, valor, fabricante y número de parte (el BOM sale directo de Altium) |
-| PCB (`ELO301_G1.PcbDoc`) | Vacío, es el siguiente paso |
+| PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, 68 componentes colocados, ruteo completo, planos y pours de GND. **DRC: 0 violaciones** |
+| Salidas de fabricación | Pendientes (Gerber, taladros, pick and place, BOM) |
 
 \* GNSS_PPS y UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU, y el nRESET del GNSS solo tiene su pull-up.
 
@@ -53,6 +54,35 @@ El documento de diseño no define estos puntos:
 8. **Protección de entrada:** el TVS va después del diodo serie, y el divisor de monitoreo mide la tensión ya protegida
    (VIN_PROT).
 
+## PCB
+
+![PCB](esquematicos/05_PCB.png)
+
+- **Placa:** 70 x 50 mm, 4 capas (Top / GND plano / Señal-Potencia / Bottom), 2 agujeros M3. Apilado tipo JLC04161H-7628
+  (prepreg 0,21 mm, núcleo 1,065 mm, prepreg 0,21 mm; cobre 35 µm fuera, 15 µm dentro; ≈ 1,6 mm).
+- **Colocación:** `generadores/pcb/colocacion.py` define las 68 posiciones y verifica sin Altium que no haya choques de
+  courtyard. La expansión J1 va en la cara inferior hacia la motherboard; el cristal junto a PF0/PF1; los desacoplos
+  pegados a cada pin de alimentación del MCU.
+- **Reglas:** clases de red (potencia, RF, osciladores, señal), anchos por clase (RF_IN 0,35 mm, SW 0,6 mm, 3V3 0,3 mm),
+  holgura 0,15 mm, máscara y serigrafía según JLCPCB.
+- **Ruteo:** Situs con las pre-rutas bloqueadas, 49 vías de GND al plano (`fanout_gnd.py`, tapadas) y un A* propio
+  (`ruteo_astar.py`) para las conexiones que Situs deja sin cerrar. Pours de GND en Top y Bottom.
+  Resultado: ~700 pistas, 132 vías, todas con máscara encima.
+- **Pads THT** con pila explícita (arriba / medio / abajo): en modo simple el DRC no ve el cobre de las capas internas.
+- **Designadores:** 60 visibles y el resto ocultos porque no caben sin chocar con serigrafía o pads.
+
+### Para revisar antes de mandar a fabricar
+
+1. Nodo SW del buck (13 mm, 2 vías): debería ser corto y solo en Top.
+2. OSC_OUT usa 2 vías: debería ir en Top sin cambiar de capa.
+3. RF_IN mide 12,8 mm: acercar el U.FL al GNSS o confirmar la impedancia de 50 Ω con el apilado real.
+4. Faltan vías de costura de GND más allá del fanout.
+5. Generar y revisar los Gerber y el taladro con el visor de la fábrica.
+
+El flujo que recrea la placa desde cero está en `generadores/pcb/` (`rehacer1.py` → `situs.py` → `fanout_altium.py` →
+`aplicar_rutas.py` → `post6.py` → `designadores2.py`). Necesita la VM de Altium y `generadores/herramientas/` (`boton.*`,
+`teclas.py`, `qga.py`, `mcpc.py`). `huellas_todas.txt` es la especificación de las 17 huellas ya con los THT corregidos.
+
 ## Generadores
 
 `generadores/` contiene lo que se usó para generar el esquemático, con altium-mcp desde Claude Code y Altium corriendo
@@ -67,9 +97,6 @@ cambios.
 
 ## Siguientes pasos
 
-1. *Design » Update PCB Document* para traer los 68 componentes al PCB.
-2. Contorno de la placa, agujeros M3 y stackup.
-3. Ubicación por bloques. Cristal junto a OSC_IN/OUT con anillo de GND; buck con lazo de entrada corto; U.FL con
-   línea de 50 Ω.
-4. Ruteo, DRC y salidas de fabricación (Gerber, BOM, pick and place).
-5. Exportar el esquemático a PDF.
+1. Corregir los puntos de revisión del PCB (arriba).
+2. Salidas de fabricación: Gerber, taladros NC, pick and place y BOM.
+3. Exportar el esquemático a PDF.

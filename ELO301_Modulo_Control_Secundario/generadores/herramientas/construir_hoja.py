@@ -81,6 +81,36 @@ else
     subprocess.run([str(AQUI / 'qga.py'), f"Copy-Item '{tmp}' '{ruta}' -Force; Remove-Item '{tmp}'"],
                    check=True, capture_output=True, timeout=120)
     print(script(f"OpenSchDoc('{ruta}');\nResultText := 'guardada como {hoja}';"))
+    # build_schematic deja las huellas con «usar la biblioteca del componente», que solo sirve con .IntLib: el
+    # Update PCB las da por no encontradas. Se pasan a «cualquier biblioteca» (las del proyecto).
+    print(script(f"""var
+    Doc, It, Comp, ImplIt, Impl : IDispatch;
+    n : Integer;
+Doc := OpenSchDoc('{ruta}');
+n := 0;
+It := Doc.SchIterator_Create;
+It.AddFilter_ObjectSet(MkSet(eSchComponent));
+Comp := It.FirstSchObject;
+while Comp <> nil do
+begin
+    ImplIt := Comp.SchIterator_Create;
+    ImplIt.AddFilter_ObjectSet(MkSet(eImplementation));
+    Impl := ImplIt.FirstSchObject;
+    while Impl <> nil do
+    begin
+        if Impl.ModelType = 'PCBLIB' then
+        begin
+            Impl.UseComponentLibrary := False;
+            n := n + 1;
+        end;
+        Impl := ImplIt.NextSchObject;
+    end;
+    Comp.SchIterator_Destroy(ImplIt);
+    Comp := It.NextSchObject;
+end;
+Doc.SchIterator_Destroy(It);
+SaveDoc('{ruta}');
+ResultText := 'huellas a cualquier biblioteca: ' + IntToStr(n);"""))
     erc = json.loads(mcp('get_erc_violations'))
     print('ERC:', {k: erc.get(k) for k in ('errors', 'warnings')})
     for v in erc.get('violations', []):

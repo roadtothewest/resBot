@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Cliente MCP mínimo (SSE, solo stdlib) para altium-mcp en la VM.
 Uso: ./mcpc.py list               -> nombre y primera línea de cada herramienta
+     ./mcpc.py list <tool>        -> descripción completa y parámetros de una herramienta
      ./mcpc.py call <tool> [json] -> resultado de la herramienta"""
 import base64
 import http.client
@@ -52,6 +53,10 @@ def main():
     enviar(ruta, {'jsonrpc': '2.0', 'method': 'notifications/initialized'})
     if sys.argv[1] == 'list':
         for t in pedir(ruta, 2, 'tools/list', {})['result']['tools']:
+            if len(sys.argv) > 2:
+                if t['name'] == sys.argv[2]:
+                    print(t.get('description'), json.dumps(t.get('inputSchema'), ensure_ascii=False, indent=1))
+                continue
             print(f"{t['name']}: {(t.get('description') or '').strip().splitlines()[0][:150]}")
         return 0
     args = json.loads(sys.argv[3]) if len(sys.argv) > 3 else {}

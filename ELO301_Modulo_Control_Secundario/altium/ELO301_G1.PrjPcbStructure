@@ -1,0 +1,4 @@
+Record=TopLevelDocument|FileName=01_Alimentacion.SchDoc|SheetNumber=1
+Record=NoMainPathDocument|SourceDocument=01_Alimentacion.SchDoc|FileName=02_MCU.SchDoc|SheetNumber=2
+Record=NoMainPathDocument|SourceDocument=01_Alimentacion.SchDoc|FileName=03_Sensores.SchDoc|SheetNumber=3
+Record=NoMainPathDocument|SourceDocument=01_Alimentacion.SchDoc|FileName=04_Conectores.SchDoc|SheetNumber=4

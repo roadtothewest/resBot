@@ -14,7 +14,7 @@ RAIZ = Path('/mnt/flatpak-sda3/runtime')
 KSYM = RAIZ / 'org.kicad.KiCad.Library.Symbols/x86_64/stable/active/files/symbols'
 KFP = RAIZ / 'org.kicad.KiCad.Library.Footprints/x86_64/stable/active/files/footprints'
 MIL = 1 / 0.0254
-ORIGEN = 50000
+ORIGEN = 0   # las huellas que crea create_footprints_batch toman como referencia el 0 absoluto (no el 50000 del PcbLib)
 TOK = re.compile(r'\(|\)|"(?:[^"\\]|\\.)*"|[^\s()"]+')
 TIPOS = {'input': 'eElectricInput', 'output': 'eElectricOutput', 'bidirectional': 'eElectricIO',
          'tri_state': 'eElectricHiZ', 'power_in': 'eElectricPower', 'power_out': 'eElectricPower',
@@ -139,8 +139,11 @@ def huella(pretty, nombre, nuevo):
                 agujero, largo_ag, tipo_ag, rot_ag = min(dx, dy), max(dx, dy), 2, (0 if dx >= dy else 90)
             else:
                 agujero = float(d[1]) * MIL
-        out.append('PAD|' + '|'.join([num, f(x), f(y), f(rot), capa, str(plat), f(agujero), str(tipo_ag), f(largo_ag),
-                                      f(rot_ag), f(w), f(h), str(FORMAS.get(forma, 2)), str(esquina)]))
+        campos = [num, f(x), f(y), f(rot), capa, str(plat), f(agujero), str(tipo_ag), f(largo_ag),
+                  f(rot_ag), f(w), f(h), str(FORMAS.get(forma, 2)), str(esquina)]
+        if capa == 'Multi Layer' and plat:  # pila explícita arriba/medio/abajo: en modo simple el DRC no ve el cobre interno
+            campos += ['1'] + [f(w), f(h), str(FORMAS.get(forma, 2))] * 2
+        out.append('PAD|' + '|'.join(campos))
     for g in raiz[1:]:
         if not isinstance(g, list) or g[0] not in ('fp_line', 'fp_rect', 'fp_poly', 'fp_circle', 'fp_arc'):
             continue
