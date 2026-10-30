@@ -1,0 +1,109 @@
+LIBRARY|C:\Users\altium\Documents\Altium\ELO301_G1\ELO301_G1.SchLib
+SYMBOL|ABM8-25.000MHZ-B2-T|Four pin crystal, GND on pins 2 and 4|1
+GRAPHIC|polyline|1|1|-100|90|-100|140|100|140|100|90
+GRAPHIC|polyline|1|1|-100|0|-80|0
+GRAPHIC|polyline|1|1|-100|-90|-100|-140|100|-140|100|-90
+GRAPHIC|polyline|1|1|-80|-50|-80|50
+GRAPHIC|rectangle|1|1|0|-45|100|45|-100
+GRAPHIC|polyline|1|1|0|-150|0|-140
+GRAPHIC|polyline|1|1|80|0|100|0
+GRAPHIC|polyline|1|1|80|-50|80|50
+PIN|1|1|eElectricPassive|eRotate180|-100|0|1|50|0|1
+PIN|2|G|eElectricPassive|eRotate270|0|-150|1|50|0|1
+PIN|3|3|eElectricPassive|eRotate0|100|0|1|50|0|1
+PIN|4|G|eElectricPassive|eRotate270|0|-150|1|50|0|0
+SYMBOL|LED - GENERIC|Light emitting diode|1
+GRAPHIC|polyline|1|1|-120|-30|-180|-90|-150|-90|-180|-90|-180|-60
+GRAPHIC|polyline|1|1|-70|-30|-130|-90|-100|-90|-130|-90|-130|-60
+GRAPHIC|polyline|1|1|-50|0|50|0
+GRAPHIC|polyline|1|1|-50|-50|-50|50
+GRAPHIC|polyline|1|1|50|-50|50|50|-50|0|50|-50
+PIN|1|K|eElectricPassive|eRotate180|-50|0|1|100|0|0
+PIN|2|A|eElectricPassive|eRotate0|50|0|1|100|0|0
+SYMBOL|FERRITE - GENERIC|Ferrite bead, small symbol|1
+GRAPHIC|polyline|1|1|-72|11|-44|59|72|-8|44|-56|-72|11
+GRAPHIC|polyline|1|1|0|35|0|51
+GRAPHIC|polyline|1|1|0|-50|0|-31
+PIN|1||eElectricPassive|eRotate90|0|50|1|50|1|0
+PIN|2||eElectricPassive|eRotate270|0|-50|1|50|1|0
+SYMBOL|PTS810 SJM 250 SMTR LFS|Push button switch, generic, two pins|1
+PIN|1|1|eElectricPassive|eRotate180|-100|0|1|100|0|0
+PIN|2|2|eElectricPassive|eRotate0|100|0|1|100|0|0
+GRAPHIC|ellipse|1|1|0|-80|0|20|20
+GRAPHIC|polyline|1|1|0|50|0|120
+GRAPHIC|ellipse|1|1|0|80|0|20|20
+GRAPHIC|polyline|1|1|100|50|-100|50
+SYMBOL|CONN - 1x14|Generic connector, single row, 01x14, script generated (kicad-library-utils/schlib/autogen/connector/)|1
+PIN|1|Pin_1|eElectricPassive|eRotate180|-50|600|1|150|0|1
+PIN|2|Pin_2|eElectricPassive|eRotate180|-50|500|1|150|0|1
+PIN|3|Pin_3|eElectricPassive|eRotate180|-50|400|1|150|0|1
+PIN|4|Pin_4|eElectricPassive|eRotate180|-50|300|1|150|0|1
+PIN|5|Pin_5|eElectricPassive|eRotate180|-50|200|1|150|0|1
+PIN|6|Pin_6|eElectricPassive|eRotate180|-50|100|1|150|0|1
+PIN|7|Pin_7|eElectricPassive|eRotate180|-50|0|1|150|0|1
+PIN|8|Pin_8|eElectricPassive|eRotate180|-50|-100|1|150|0|1
+PIN|9|Pin_9|eElectricPassive|eRotate180|-50|-200|1|150|0|1
+PIN|10|Pin_10|eElectricPassive|eRotate180|-50|-300|1|150|0|1
+PIN|11|Pin_11|eElectricPassive|eRotate180|-50|-400|1|150|0|1
+PIN|12|Pin_12|eElectricPassive|eRotate180|-50|-500|1|150|0|1
+PIN|13|Pin_13|eElectricPassive|eRotate180|-50|-600|1|150|0|1
+PIN|14|Pin_14|eElectricPassive|eRotate180|-50|-700|1|150|0|1
+GRAPHIC|rectangle|1|1|1|-50|650|50|-750
+GRAPHIC|rectangle|1|1|0|-50|605|0|595
+GRAPHIC|rectangle|1|1|0|-50|505|0|495
+GRAPHIC|rectangle|1|1|0|-50|405|0|395
+GRAPHIC|rectangle|1|1|0|-50|305|0|295
+GRAPHIC|rectangle|1|1|0|-50|205|0|195
+GRAPHIC|rectangle|1|1|0|-50|105|0|95
+GRAPHIC|rectangle|1|1|0|-50|5|0|-5
+GRAPHIC|rectangle|1|1|0|-50|-95|0|-105
+GRAPHIC|rectangle|1|1|0|-50|-195|0|-205
+GRAPHIC|rectangle|1|1|0|-50|-295|0|-305
+GRAPHIC|rectangle|1|1|0|-50|-395|0|-405
+GRAPHIC|rectangle|1|1|0|-50|-495|0|-505
+GRAPHIC|rectangle|1|1|0|-50|-595|0|-605
+GRAPHIC|rectangle|1|1|0|-50|-695|0|-705
+SYMBOL|CONN - 1x05|Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)|1
+PIN|1|Pin_1|eElectricPassive|eRotate180|-50|200|1|150|0|1
+PIN|2|Pin_2|eElectricPassive|eRotate180|-50|100|1|150|0|1
+PIN|3|Pin_3|eElectricPassive|eRotate180|-50|0|1|150|0|1
+PIN|4|Pin_4|eElectricPassive|eRotate180|-50|-100|1|150|0|1
+PIN|5|Pin_5|eElectricPassive|eRotate180|-50|-200|1|150|0|1
+GRAPHIC|rectangle|1|1|1|-50|250|50|-250
+GRAPHIC|rectangle|1|1|0|-50|205|0|195
+GRAPHIC|rectangle|1|1|0|-50|105|0|95
+GRAPHIC|rectangle|1|1|0|-50|5|0|-5
+GRAPHIC|rectangle|1|1|0|-50|-95|0|-105
+GRAPHIC|rectangle|1|1|0|-50|-195|0|-205
+SYMBOL|CONN - 1x04|Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)|1
+PIN|1|Pin_1|eElectricPassive|eRotate180|-50|100|1|150|0|1
+PIN|2|Pin_2|eElectricPassive|eRotate180|-50|0|1|150|0|1
+PIN|3|Pin_3|eElectricPassive|eRotate180|-50|-100|1|150|0|1
+PIN|4|Pin_4|eElectricPassive|eRotate180|-50|-200|1|150|0|1
+GRAPHIC|rectangle|1|1|1|-50|150|50|-250
+GRAPHIC|rectangle|1|1|0|-50|105|0|95
+GRAPHIC|rectangle|1|1|0|-50|5|0|-5
+GRAPHIC|rectangle|1|1|0|-50|-95|0|-105
+GRAPHIC|rectangle|1|1|0|-50|-195|0|-205
+SYMBOL|U.FL-R-SMT-1(10)|coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)|1
+GRAPHIC|polyline|1|1|-100|0|-20|0
+GRAPHIC|arc|1|1|-1.351|-0.541|71.353|195.826|0.434
+GRAPHIC|arc|1|1|-1.348|0.564|71.35|359.547|164.193
+GRAPHIC|ellipse|1|1|0|0|0|20|20
+GRAPHIC|polyline|1|1|0|-100|0|-70
+PIN|1|In|eElectricPassive|eRotate180|-100|0|1|100|0|1
+PIN|2|Ext|eElectricPassive|eRotate270|0|-100|1|100|0|1
+SYMBOL|SMAJ15A-13-F|Diodes SMAJ15A TVS unidireccional 400 W, 15 V de trabajo, SMA|1
+GRAPHIC|polyline|1|1|-50|-50|-50|50|-30|50
+GRAPHIC|polyline|1|1|50|0|-50|0
+GRAPHIC|polyline|1|1|50|-50|50|50|-50|0|50|-50
+PIN|1|K|eElectricPassive|eRotate180|-50|0|1|100|0|0
+PIN|2|A|eElectricPassive|eRotate0|50|0|1|100|0|0
+SYMBOL|B240A-13-F|Schottky diode|1
+GRAPHIC|polyline|1|1|-75|25|-75|50|-50|50|-50|-50|-25|-50|-25|-25
+GRAPHIC|polyline|1|1|50|50|50|-50|-50|0|50|50
+GRAPHIC|polyline|1|1|50|0|-50|0
+PIN|1|K|eElectricPassive|eRotate180|-50|0|1|100|0|0
+PIN|2|A|eElectricPassive|eRotate0|50|0|1|100|0|0
+SYMBOL|MOUNTING HOLE - M3|Mounting Hole without connection|1
+GRAPHIC|ellipse|1|1|0|0|0|50|50

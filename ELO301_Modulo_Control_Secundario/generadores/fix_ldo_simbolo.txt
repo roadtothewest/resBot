@@ -1,0 +1,8 @@
+LIBRARY|C:\Users\altium\Documents\Altium\ELO301_G1\ELO301_G1.SchLib
+SYMBOL|TLV75533PDBVR|TI TLV75533 LDO 500 mA, salida fija 3,3 V, SOT-23-5|1
+GRAPHIC|rectangle|1|1|1|-400|200|400|-300
+PIN|1|IN|eElectricPower|eRotate180|-400|100|1|100|1|1
+PIN|3|EN|eElectricInput|eRotate180|-400|0|1|100|1|1
+PIN|2|GND|eElectricPower|eRotate270|0|-300|1|100|1|1
+PIN|5|OUT|eElectricPower|eRotate0|400|100|1|100|1|1
+PIN|4|NC|eElectricPassive|eRotate0|400|-100|1|100|1|1

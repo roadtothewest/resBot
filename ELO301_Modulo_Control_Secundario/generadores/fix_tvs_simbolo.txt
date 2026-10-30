@@ -1,0 +1,7 @@
+LIBRARY|C:\Users\altium\Documents\Altium\ELO301_G1\ELO301_G1.SchLib
+SYMBOL|SMAJ15A-13-F|Diodes SMAJ15A TVS unidireccional 400 W, 15 V de trabajo, SMA|1
+GRAPHIC|polyline|1|1|-50|-50|-50|50|-30|50
+GRAPHIC|polyline|1|1|50|0|-50|0
+GRAPHIC|polyline|1|1|50|-50|50|50|-50|0|50|-50
+PIN|1|K|eElectricPassive|eRotate180|-50|0|1|100|0|0
+PIN|2|A|eElectricPassive|eRotate0|50|0|1|100|0|0

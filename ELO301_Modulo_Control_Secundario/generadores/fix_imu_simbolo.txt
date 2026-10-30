@@ -1,0 +1,17 @@
+LIBRARY|C:\Users\altium\Documents\Altium\ELO301_G1\ELO301_G1.SchLib
+SYMBOL|BMI270|Bosch BMI270 IMU 6 ejes (acelerometro + giroscopio), SPI/I2C, LGA-14 2.5x3.0mm|1
+GRAPHIC|rectangle|1|1|1|-600|500|600|-600
+PIN|1|SDO|eElectricIO|eRotate180|-600|300|1|100|1|1
+PIN|14|SDx|eElectricIO|eRotate180|-600|200|1|100|1|1
+PIN|13|SCx|eElectricInput|eRotate180|-600|100|1|100|1|1
+PIN|12|CSB|eElectricInput|eRotate180|-600|0|1|100|1|1
+PIN|4|INT1|eElectricIO|eRotate180|-600|-200|1|100|1|1
+PIN|9|INT2|eElectricIO|eRotate180|-600|-300|1|100|1|1
+PIN|2|ASDx|eElectricIO|eRotate0|600|300|1|100|1|1
+PIN|3|ASCx|eElectricIO|eRotate0|600|200|1|100|1|1
+PIN|10|OCSB|eElectricPassive|eRotate0|600|0|1|100|1|1
+PIN|11|OSDO|eElectricOutput|eRotate0|600|-100|1|100|1|1
+PIN|5|VDDIO|eElectricPower|eRotate90|-200|500|1|100|1|1
+PIN|8|VDD|eElectricPower|eRotate90|200|500|1|100|1|1
+PIN|6|GNDIO|eElectricPower|eRotate270|-200|-600|1|100|1|1
+PIN|7|GND|eElectricPower|eRotate270|200|-600|1|100|1|1

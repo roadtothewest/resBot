@@ -1,0 +1,21 @@
+LIBRARY|C:\Users\altium\Documents\Altium\ELO301_G1\ELO301_G1.SchLib
+SYMBOL|ATGM336H-5N31|ZKW ATGM336H-5N31 modulo GNSS GPS+BDS, UART + 1PPS, LCC-18 9.7x10.1mm (huella compatible u-blox MAX)|1
+GRAPHIC|rectangle|1|1|1|500|600|-500|-600
+PIN|1|GND|eElectricPower|eRotate270|0|-600|1|100|1|1
+PIN|2|TXD|eElectricOutput|eRotate180|-500|300|1|100|1|1
+PIN|3|RXD|eElectricInput|eRotate180|-500|400|1|100|1|1
+PIN|4|1PPS|eElectricOutput|eRotate0|500|-300|1|100|1|1
+PIN|5|ON/OFF|eElectricInput|eRotate180|-500|-200|1|100|1|1
+PIN|6|VBAT|eElectricPower|eRotate90|0|600|1|100|1|1
+PIN|7|NC|eElectricPassive|eRotate90|-100|600|1|100|1|1
+PIN|8|VCC|eElectricPower|eRotate90|-200|600|1|100|1|1
+PIN|9|R\E\S\E\T\|eElectricInput|eRotate180|-500|-400|1|100|1|1
+PIN|10|GND|eElectricPassive|eRotate270|0|-600|1|100|0|0
+PIN|11|RF_IN|eElectricPassive|eRotate0|500|0|1|100|1|1
+PIN|12|GND|eElectricPassive|eRotate270|0|-600|1|100|0|0
+PIN|13|NC|eElectricPassive|eRotate0|500|200|1|100|1|1
+PIN|14|VCC_RF|eElectricPower|eRotate90|200|600|1|100|1|1
+PIN|15|RSVD|eElectricPassive|eRotate0|400|-200|1|100|0|0
+PIN|16|SDA|eElectricIO|eRotate180|-500|100|1|100|1|1
+PIN|17|SCL|eElectricOutput|eRotate180|-500|0|1|100|1|1
+PIN|18|RSVD|eElectricPassive|eRotate180|-500|-300|1|100|1|1
