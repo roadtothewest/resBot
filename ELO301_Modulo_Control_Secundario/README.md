@@ -67,17 +67,21 @@ El documento de diseño no define estos puntos:
   holgura 0,15 mm, máscara y serigrafía según JLCPCB.
 - **Ruteo:** Situs con las pre-rutas bloqueadas, 49 vías de GND al plano (`fanout_gnd.py`, tapadas) y un A* propio
   (`ruteo_astar.py`) para las conexiones que Situs deja sin cerrar. Pours de GND en Top y Bottom.
-  Resultado: ~700 pistas, 132 vías, todas con máscara encima.
+  Resultado: 682 pistas, 125 vías, todas con máscara encima.
+- **Nodos críticos** (rehechos en Top, sin vías): SW 6,0 mm, BST 2,7 mm, OSC_IN 7,4 mm, OSC_OUT 6,4 mm,
+  RF_IN 5,0 mm a 0,35 mm (≈ 50 Ω sobre el prepreg de 0,21 mm) con un stub de 0,4 mm hacia L2. L1 se giró 180° para
+  que su pad SW mire a U1/C4, y L2 (47 nH, VCC_RF) quedó pegada a la línea de RF.
 - **Pads THT** con pila explícita (arriba / medio / abajo): en modo simple el DRC no ve el cobre de las capas internas.
 - **Designadores:** 60 visibles y el resto ocultos porque no caben sin chocar con serigrafía o pads.
 
 ### Para revisar antes de mandar a fabricar
 
-1. Nodo SW del buck (13 mm, 2 vías): debería ser corto y solo en Top.
-2. OSC_OUT usa 2 vías: debería ir en Top sin cambiar de capa.
-3. RF_IN mide 12,8 mm: acercar el U.FL al GNSS o confirmar la impedancia de 50 Ω con el apilado real.
-4. Faltan vías de costura de GND más allá del fanout.
-5. Generar y revisar los Gerber y el taladro con el visor de la fábrica.
+1. Faltan vías de costura de GND más allá del fanout.
+2. Confirmar los 50 Ω de RF_IN con la calculadora de impedancia de la fábrica.
+3. Generar y revisar los Gerber y el taladro con el visor de la fábrica.
+
+Los nodos críticos se rehacen con `criticas_preparar.py` (respaldo, giro de L1, borra el cobre viejo) →
+`ruteo_astar.py` (solo Top) → `aplicar_rutas.py` → `fix_netl2.py`; `volcar.py` exporta la geometría para medir.
 
 El flujo que recrea la placa desde cero está en `generadores/pcb/` (`rehacer1.py` → `situs.py` → `fanout_altium.py` →
 `aplicar_rutas.py` → `post6.py` → `designadores2.py`). Necesita la VM de Altium y `generadores/herramientas/` (`boton.*`,

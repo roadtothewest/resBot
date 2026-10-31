@@ -87,7 +87,7 @@ for i, des in enumerate(('C1', 'C2', 'C3')):
     pon(des, 17.5, 8.6 + 2.0 * i)
 pon('U1', 22.5, 10.5)
 pon('C4', 22.5, 14.2)
-pon('L1', 22.5, 18.0)
+pon('L1', 22.5, 18.0, 180)                             # pad SW (1) a la derecha, hacia U1-5; pad de 5 V hacia C5-C7
 for i, des in enumerate(('C5', 'C6', 'C7')):
     pon(des, 17.5, 15.6 + 2.0 * i)
 pon('U2', 12.0, 17.5)                                   # LDO del MCU
@@ -110,7 +110,7 @@ pon('C27', 18.2, 33.5, 90)
 pon('C24', 49.0, 36.5, 90)                              # desacoplo del GNSS
 pon('C25', 49.0, 33.0, 90)
 pon('R9', 49.0, 29.5, 90)                               # pull-up de nRESET del GNSS
-pon('L2', 64.5, 37.5, 90)                               # 47 nH VCC_RF -> RF_IN
+pon('L2', 63.83, 32.6, 270)                             # 47 nH VCC_RF -> RF_IN, entre U6 y J8 pegada a la línea RF
 pon('R7', 9.2, 31.0)                                    # pull-ups I2C del ToF
 pon('R8', 9.2, 33.0)
 

@@ -2,7 +2,7 @@
 """Ruteo puntual con A* (grilla de 0,05 mm; Top, Senal-Potencia y Bottom; vías pasantes de 0,6/0,3 mm) para las
 conexiones que Situs deja sin completar. Lee la geometría volcada de Altium (/tmp/geometria.json: pistas y vías;
 /tmp/pads.json: pads) en mm desde el origen de la placa y escribe /tmp/rutas.json con las pistas y vías nuevas.
-Uso: ruteo_astar.py  (las conexiones a rutear están en PEDIDOS, abajo)
+Uso: ruteo_astar.py  (las conexiones a rutear están en PEDIDOS, abajo; el cobre viejo de esas redes ya debe estar borrado)
 ponytail: una conexión a la vez, sin rip-up ni optimización global; si no hay camino lo informa y no escribe nada."""
 import heapq
 import json
@@ -18,9 +18,25 @@ HOLGURA, VIA, HOLGO = 0.15, 0.6, 0.03          # regla de holgura, diámetro de 
 BORDE = 0.4
 COSTO_VIA, COSTO_GIRO = 20.0, 0.4               # en pasos de grilla (20 = 1 mm)
 
-# (red, pad de origen, pads de destino o None = cualquier cobre de la red lejos del origen, ancho de pista)
-PEDIDOS = [('SPI_IMU_CS', ('U5', '12'), [('U4', '12')], 0.2),
-           ('V3V3_SENS', ('U6', '8'), None, 0.25)]
+# (red, pad de origen, pads de destino o None = cualquier otro cobre de la red, ancho de pista, capas permitidas)
+TOP = (0,)
+PEDIDOS = [('SW', ('U1', '5'), [('C4', '2')], 0.6, TOP),          # nodos críticos: solo en Top, sin vías
+           ('SW', ('L1', '1'), None, 0.6, TOP),
+           ('BST', ('U1', '6'), [('C4', '1')], 0.2, TOP),
+           ('V_5V', ('L1', '2'), None, 0.6, TOP),
+           ('OSC_OUT', ('C23', '1'), None, 0.2, TOP),
+           ('RF_IN', ('L2', '2'), None, 0.35, TOP),
+           ('NetL2_1', ('U6', '14'), [('L2', '1')], 0.2, TOP)]
+# tramos fijos que se agregan antes de rutear: (capa, x1, y1, x2, y2, ancho, red) y vías (x, y, red)
+MANUALES = {'pistas': [(0, 37.16, 23.75, 37.92, 23.75, 0.2, 'OSC_OUT'),    # U4-6 -> Y1-3 por y = 23,89, entre OSC_IN y NRST:
+                       (0, 37.92, 23.75, 38.06, 23.89, 0.2, 'OSC_OUT'),    # la grilla de 0,05 mm no cae en ese pasillo
+                       (0, 38.06, 23.89, 39.75, 23.89, 0.2, 'OSC_OUT'),
+                       (0, 39.75, 23.89, 39.75, 24.6, 0.2, 'OSC_OUT'),
+                       (0, 41.45, 24.6, 42.52, 24.6, 0.25, 'GND'),
+                       (0, 61.75, 29.7, 63.53, 29.7, 0.35, 'RF_IN'),        # U6-11 -> J8-1 entrando al centro de ambos pads
+                       (0, 63.53, 29.7, 64.83, 31.0, 0.35, 'RF_IN'),
+                       (0, 64.83, 31.0, 65.77, 31.0, 0.35, 'RF_IN')],        # vía de Y1-2 a la derecha: libera el paso de OSC_OUT
+            'vias': [(42.52, 24.6, 'GND')]}
 
 
 def ventana(x0, y0, x1, y1):
@@ -168,19 +184,26 @@ def quitar_gnd_situs(t):
 def main():
     geo, pads = json.load(open('/tmp/geometria.json')), json.load(open('/tmp/pads.json'))
     todos = cobre(geo, pads, quitar_gnd_situs)
-    salida = {'pistas': [], 'vias': [], 'fallas': []}
-    for red, (des, pin), destinos, ancho in PEDIDOS:
+    salida = {'pistas': list(MANUALES['pistas']), 'vias': list(MANUALES['vias']), 'fallas': []}
+    todos += [([c], 'seg', (x1, y1, x2, y2, w / 2), r) for c, x1, y1, x2, y2, w, r in MANUALES['pistas']]
+    todos += [([0, 1, 2], 'seg', (x, y, x, y, VIA / 2), r) for x, y, r in MANUALES['vias']]
+    for red, (des, pin), destinos, ancho, *capas in PEDIDOS:
+        capas = capas[0] if capas else (0, 1, 2)
         bloq, bloq_via = rasterizar(todos, red, ancho / 2 + HOLGURA + HOLGO, VIA / 2 + HOLGURA + HOLGO)
+        for c in {0, 1, 2} - set(capas):
+            bloq[c] = True
         pad0 = next(p for p in pads if p['des'] == des and p['pad'] == pin)
-        cx, cy = pad0['centro']
         propios = [o for o in todos if o[3] == red]
-        origen = celdas([(([0, 1, 2] if pad0['capa'] == 'Multi Layer' else [0]), 'caja', tuple(pad0['caja']), red)])
         if destinos:
             dest = [o for o in propios if o[1] == 'caja' and any(p['des'] == d and p['pad'] == q and tuple(p['caja']) == o[2]
                                                                for d, q in destinos for p in pads)]
-        else:   # cualquier cobre de la red fuera de la isla del origen (radio de 1,5 mm)
-            dest = [o for o in propios if math.hypot((o[2][0] + o[2][2]) / 2 - cx, (o[2][1] + o[2][3]) / 2 - cy) > 1.5]
-        camino = astar(origen, celdas(dest), bloq, bloq_via)
+        else:   # ponytail: si la red ya tiene cobre pegado al origen, ese cobre cuenta como destino y no se rutea nada
+            dest = [o for o in propios if not (o[1] == 'caja' and o[2] == tuple(pad0['caja']))]
+        # dentro del pad solo valen las celdas a holgura de los pads vecinos (una pista ancha no sale rozándolos)
+        origen = celdas([(([0, 1, 2] if pad0['capa'] == 'Multi Layer' else [0]), 'caja', tuple(pad0['caja']), red)], capas)
+        destino = celdas(dest, capas)
+        origen, destino = (m & ~bloq if (m & ~bloq).any() else m for m in (origen, destino))
+        camino = astar(origen, destino, bloq, bloq_via)
         if not camino:
             salida['fallas'].append(red)
             continue
