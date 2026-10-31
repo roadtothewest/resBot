@@ -78,7 +78,16 @@ El documento de diseño no define estos puntos:
 
 1. Faltan vías de costura de GND más allá del fanout.
 2. Confirmar los 50 Ω de RF_IN con la calculadora de impedancia de la fábrica.
-3. Generar y revisar los Gerber y el taladro con el visor de la fábrica.
+3. Revisar los Gerber y el taladro con el visor de la fábrica (JLCPCB/PCBWay) antes de pedir.
+4. El PDF del esquemático (`Documentacion.OutJob`) no se pudo regenerar: Altium se colgó al publicarlo.
+5. El BOM no trae números de parte de proveedor (LCSC): se arma solo con valor y huella.
+
+### Salidas de fabricación (`fabricacion/`)
+
+Generadas con `altium/Fabricacion.OutJob` desde la placa con DRC 0:
+- `ELO301_G1_Gerber_JLCPCB.zip`: 11 capas Gerber (cobre Top/Mid/GND/Bottom, máscara, serigrafía, pasta, contorno 70 x 50 mm)
+  más el taladro `NC Drill/ELO301_G1.TXT` (4 diámetros: 0,3 / 0,95 / 1,0 mm chapados y 3,2 mm de los agujeros M3).
+- `Pick Place/` (68 piezas, mil) y `BOM_ELO301_G1.csv` (35 líneas, agrupado por valor y huella).
 
 Los nodos críticos se rehacen con `criticas_preparar.py` (respaldo, giro de L1, borra el cobre viejo) →
 `ruteo_astar.py` (solo Top) → `aplicar_rutas.py` → `fix_netl2.py`; `volcar.py` exporta la geometría para medir.

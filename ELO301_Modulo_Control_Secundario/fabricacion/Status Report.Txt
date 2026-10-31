@@ -1,0 +1,10 @@
+Output: Pick Place Files
+Type  : Pick Place
+From  : PCB Document [ELO301_G1.PcbDoc]
+   Generated File[Pick Place for ELO301_G1.txt]
+
+
+Files Generated   : 1
+Documents Printed : 0
+
+Finished Output Generation At 2:10:35 PM On 10/31/2026

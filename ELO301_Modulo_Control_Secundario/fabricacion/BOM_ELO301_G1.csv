@@ -1,0 +1,36 @@
+Comment,Footprint,Description,Designators,Qty
+10uF,C0603_-_MURATA,,"C1, C2, C3, C24",4
+100nF,C0603_-_MURATA,,"C4, C12, C13, C14, C15, C17, C19, C20, C21, C25, C26, C27",12
+22uF,C0603_-_MURATA,,"C5, C6, C7",3
+1uF,C0603_-_MURATA,,"C8, C9, C10, C11, C18",5
+4.7uF,C0603_-_MURATA,,C16,1
+"""27pF C0G""",C0603_-_MURATA,,"C22, C23",2
+B240A,SMA_-_DIODES,Schottky diode,D1,1
+SMAJ15A,SMA_-_DIODES,"Diodes SMAJ15A TVS unidireccional 400 W, 15 V de trabajo, SMA",D2,1
+220R@100MHz,L0603_-_GENERIC,"Ferrite bead, small symbol","FB1, FB2",2
+M3,M3_-_HOLE,Mounting Hole without connection,"H1, H2",2
+"""HDR 1x14""",HDR_1x14_2.54_-_BOOMELE,"Generic connector, single row, 01x14, script generated (kicad-library-utils/schlib/autogen/connector/)",J1,1
+"""HDR 1x05""",HDR_1x05_2.54_-_BOOMELE,"Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)",J2,1
+FOC1,B5B-XH-A_-_JST,"Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)",J3,1
+FOC2,B5B-XH-A_-_JST,"Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)",J4,1
+FOC3,B5B-XH-A_-_JST,"Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)",J5,1
+FOC4,B5B-XH-A_-_JST,"Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)",J6,1
+B4B-XH-A,B4B-XH-A_-_JST,"Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)",J7,1
+U.FL,U.FL_-_HIROSE,"coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)",J8,1
+SRN4018-4R7M,SRN4018_-_BOURNS,,L1,1
+LQG18HN47NJ00D,L0603_-_GENERIC,,L2,1
+Verde,LED0603_-_LITEON,Light emitting diode,LED1,1
+Rojo,LED0603_-_LITEON,Light emitting diode,LED2,1
+100k,R0603_-_YAGEO,,R1,1
+12k,R0603_-_YAGEO,,R2,1
+1k,R0603_-_YAGEO,,"R3, R5",2
+10k,R0603_-_YAGEO,,"R4, R9",2
+4.7k,R0603_-_YAGEO,,"R7, R8",2
+33R,R0603_-_YAGEO,,"R10, R11, R12, R13, R14, R15",6
+PTS810,PTS810_-_CK,"Push button switch, generic, two pins","SW1, SW2",2
+AP63205,TSOT-23-6_-_DIODES,"2A, 1.1MHz Buck DC/DC Converter, fixed 5.0V output voltage, TSOT-23-6",U1,1
+TLV75533,SOT-23-5_-_TI,"TI TLV75533 LDO 500 mA, salida fija 3,3 V, SOT-23-5","U2, U3",2
+STM32G431CBT6,LQFP-48_-_ST,"STMicroelectronics Arm Cortex-M4 MCU, 128KB flash, 32KB RAM, 170 MHz, 1.71-3.6V, 38 GPIO, LQFP48",U4,1
+BMI270,LGA-14_2.5x3.0_-_BOSCH,"Bosch BMI270 IMU 6 ejes (acelerometro + giroscopio), SPI/I2C, LGA-14 2.5x3.0mm",U5,1
+ATGM336H-5N31,LCC-18_9.7x10.1_-_ZKW,"ZKW ATGM336H-5N31 modulo GNSS GPS+BDS, UART + 1PPS, LCC-18 9.7x10.1mm (huella compatible u-blox MAX)",U6,1
+25MHz,ABM8_-_ABRACON,"Four pin crystal, GND on pins 2 and 4",Y1,1

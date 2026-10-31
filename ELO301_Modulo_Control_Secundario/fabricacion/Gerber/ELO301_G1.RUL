@@ -1,0 +1,9 @@
+DRC Rules Export File for PCB: C:\Users\altium\Documents\Altium\ELO301_G1\ELO301_G1.PcbDoc
+RuleKind=Clearance|RuleName=Clearance_Poligono|Scope=Board|Minimum=11.81
+RuleKind=Width|RuleName=Ancho_RF|Scope=Board|Minimum=13.78
+RuleKind=Width|RuleName=Ancho_Potencia|Scope=Board|Minimum=11.81
+RuleKind=Width|RuleName=Ancho_Alimentacion|Scope=Board|Minimum=9.84
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=1.97
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=5.91
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=5.91
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0

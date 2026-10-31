@@ -1,0 +1,59 @@
+[OutputJobFile]
+Version=1.0
+
+[OutputGroup1]
+Name=Fabricacion.OutJob
+Description=
+TargetOutputMedium=Fabrication Files
+VariantName=[No Variations]
+VariantScope=0
+OutputMedium1=Fabrication Files
+OutputMedium1_Type=GeneratedFiles
+OutputType1=Gerber
+OutputName1=Gerber Files
+OutputCategory1=Fabrication
+OutputDocumentPath1=
+OutputVariantName1=
+OutputEnabled1=1
+OutputEnabled1_OutputMedium1=1
+OutputDefault1=0
+Configuration1_Name1=OutputConfigurationParameter1
+Configuration1_Item1=AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16842753~1,16842751~1,16973830~1,16973831~1,16973832~1,16973833~1,16973834~1,16973835~1,16973848~1|GerberUnit=Metric|NumberOfDecimals=5|OriginPosition=Absolute|Plot.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16842753~1,16842751~1,16973830~1,16973831~1,16973832~1,16973833~1,16973834~1,16973835~1,16973848~1|PlotBoardProfile=True|PlotUsedDrillDrawingLayerPairs=False|Record=GerberView
+OutputType2=NC Drill
+OutputName2=NC Drill Files
+OutputCategory2=Fabrication
+OutputDocumentPath2=
+OutputVariantName2=
+OutputEnabled2=1
+OutputEnabled2_OutputMedium1=1
+OutputDefault2=0
+OutputType3=Pick Place
+OutputName3=Pick Place Files
+OutputCategory3=Assembly
+OutputDocumentPath3=
+OutputVariantName3=
+OutputEnabled3=1
+OutputEnabled3_OutputMedium1=1
+OutputDefault3=0
+OutputType4=Bill of Materials
+OutputName4=Bill of Materials
+OutputCategory4=Assembly
+OutputDocumentPath4=
+OutputVariantName4=
+OutputEnabled4=1
+OutputEnabled4_OutputMedium1=1
+OutputDefault4=0
+
+[PublishSettings]
+
+[GeneratedFilesSettings]
+RelativeOutputPath1=Fabricacion\
+OpenOutputs1=0
+AddToProject1=0
+TimestampFolder1=0
+UseOutputName1=0
+OpenODBOutput1=0
+OpenGerberOutput1=0
+OpenNCDrillOutput1=0
+OpenIPCOutput1=0
+EnableReload1=0
