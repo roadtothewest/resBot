@@ -5,7 +5,7 @@ C:\Users\altium\Documents\Altium\ELO301_G1\Fabricacion\Pick Place\Pick Place for
 File Design Information:
 
 Date:       31/10/26
-Time:       14:10
+Time:       14:18
 Revision:   Not in VersionControl
 Variant:    No variations
 Units used: mil

@@ -67,7 +67,7 @@ El documento de diseño no define estos puntos:
   holgura 0,15 mm, máscara y serigrafía según JLCPCB.
 - **Ruteo:** Situs con las pre-rutas bloqueadas, 49 vías de GND al plano (`fanout_gnd.py`, tapadas) y un A* propio
   (`ruteo_astar.py`) para las conexiones que Situs deja sin cerrar. Pours de GND en Top y Bottom.
-  Resultado: 682 pistas, 125 vías, todas con máscara encima.
+  Resultado: 682 pistas, 188 vías (63 de ellas de costura de GND cada ≥ 5 mm, `costura.py`), todas con máscara encima.
 - **Nodos críticos** (rehechos en Top, sin vías): SW 6,0 mm, BST 2,7 mm, OSC_IN 7,4 mm, OSC_OUT 6,4 mm,
   RF_IN 5,0 mm a 0,35 mm (≈ 50 Ω sobre el prepreg de 0,21 mm) con un stub de 0,4 mm hacia L2. L1 se giró 180° para
   que su pad SW mire a U1/C4, y L2 (47 nH, VCC_RF) quedó pegada a la línea de RF.
@@ -76,11 +76,10 @@ El documento de diseño no define estos puntos:
 
 ### Para revisar antes de mandar a fabricar
 
-1. Faltan vías de costura de GND más allá del fanout.
-2. Confirmar los 50 Ω de RF_IN con la calculadora de impedancia de la fábrica.
-3. Revisar los Gerber y el taladro con el visor de la fábrica (JLCPCB/PCBWay) antes de pedir.
-4. El PDF del esquemático (`Documentacion.OutJob`) no se pudo regenerar: Altium se colgó al publicarlo.
-5. El BOM no trae números de parte de proveedor (LCSC): se arma solo con valor y huella.
+1. Confirmar los 50 Ω de RF_IN con la calculadora de impedancia de la fábrica.
+2. Revisar los Gerber y el taladro con el visor de la fábrica (JLCPCB/PCBWay) antes de pedir.
+3. El PDF del esquemático (`Documentacion.OutJob`) no se pudo regenerar: Altium se colgó al publicarlo.
+4. El BOM no trae números de parte de proveedor (LCSC): se arma solo con valor y huella.
 
 ### Salidas de fabricación (`fabricacion/`)
 
