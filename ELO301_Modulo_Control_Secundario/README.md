@@ -10,9 +10,9 @@ con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 |---|---|
 | Esquemático | 4 hojas, 68 componentes |
 | ERC | **0 errores**, 3 advertencias esperadas* |
-| Componentes | Cada uno con huella, valor, fabricante y número de parte |
+| Componentes | Cada uno con huella, valor, fabricante, número de parte y código LCSC, también en la placa |
 | PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, 68 componentes colocados, ruteo completo, plano y pours de GND. **DRC: 0 violaciones** |
-| Salidas de fabricación | Regeneradas y verificadas: paquete para JLCPCB, BOM con número de parte y CPL ([detalle](#salidas-de-fabricación-fabricacion)) |
+| Salidas de fabricación | Regeneradas y verificadas, también en el cotizador de JLCPCB: paquete para JLCPCB, BOM con MPN y LCSC, y CPL ([detalle](#salidas-de-fabricación-fabricacion)) |
 
 \* GNSS_PPS y UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU, y el nRESET del GNSS solo tiene su pull-up.
 
@@ -85,8 +85,9 @@ Generadas con `altium/Fabricacion.OutJob` (contenedor «Fabrication Files») des
 
 - **`ELO301_G1_Gerber_JLCPCB.zip`, lo que se sube a JLCPCB:** 11 Gerber y el taladro. El plano GND va en positivo como
   `.G2L` (capa 2), Señal-Potencia como `.G3L` (capa 3) y el contorno como `.GKO`, los nombres que JLCPCB documenta para 4 capas.
-- **`BOM_ELO301_G1.csv`:** 34 líneas y 66 piezas (sin los agujeros M3), agrupadas por número de parte, con fabricante y
-  MPN. LCSC solo del GNSS (C90770).
+- **`BOM_ELO301_G1.csv`:** 34 líneas y 66 piezas (sin los agujeros M3), agrupadas por número de parte, con fabricante,
+  MPN y código LCSC. Cada código se verificó contra la API de piezas de JLCPCB el 01/11/2026: mismo MPN y stock
+  suficiente. 33 líneas son piezas «Extended» (JLCPCB cobra un cargo fijo por cada tipo); la única «Basic» es C22/C23.
 - **`CPL_ELO301_G1_JLCPCB.csv`:** posición (mm) y rotación de las 66 piezas.
 - **`Gerber/`, `NC Drill/` y `Pick Place/`:** salida directa del OutJob, para otros fabricantes (ahí el plano `.GP1` es negativo).
 - **Taladro:** 188 × 0,3 mm (vías), 24 × 0,95 mm y 19 × 1,0 mm metalizados, y 2 × 3,2 mm sin metalizar (M3), en un solo
@@ -95,9 +96,21 @@ Generadas con `altium/Fabricacion.OutJob` (contenedor «Fabrication Files») des
 Al pedir: 4 capas, 1,6 mm, apilado JLC04161H-7628, cobre exterior de 1 oz. El orden queda L1 `.GTL` · L2 `.G2L` (GND) ·
 L3 `.G3L` · L4 `.GBL`.
 
-**Para regenerarlas:** en Altium, ejecutar «Fabrication Files» de `Fabricacion.OutJob`; después,
-`python3 generadores/herramientas/jlcpcb.py altium/Fabricacion fabricacion/`. El script no arma el zip si el contorno no
-parte en (0,0), si algún agujero no tiene su pad o su antipad/alivio en el plano, o si las capas vienen mezcladas.
+**En el cotizador de JLCPCB (01/11/2026):**
+- **Reconoció:** 4 capas de 70 × 50 mm, los 12 archivos (como salida de Altium) y 233 agujeros. El agujero mínimo es de
+  0,30 mm, la pista mínima de 0,20 mm y la separación mínima de 0,156 mm. Sin observaciones (`RES_OK`).
+- **A revisar:** contó 4 agujeros sin metalizar, pero el taladro tiene 2 (los M3) y el contorno no trae otros. Conviene
+  mirarlo en su «Gerber Viewer», que pide iniciar sesión.
+- **Render independiente (PyGerber) de `.G2L`:** plano macizo, 97 agujeros de otras redes despejados y los 136 de GND
+  unidos al plano. PyGerber no dibuja la primitiva de alivio térmico, así que ahí se ven como conexión directa.
+
+**Para regenerarlas:** con el proyecto abierto, ejecutar «Fabrication Files» de `Fabricacion.OutJob`. El OutJob está
+dentro del proyecto: si se abre suelto, Altium lo deja en «Free Documents» y no genera nada. Después correr
+`python3 generadores/herramientas/jlcpcb.py altium/Fabricacion fabricacion/`. El script no arma el zip en estos casos:
+- el contorno no parte en (0,0);
+- algún agujero no tiene su pad, o su antipad o alivio en el plano;
+- una pista llega a un agujero sin pad en esa capa;
+- las capas vienen mezcladas.
 
 ### Scripts de la placa
 
@@ -107,7 +120,9 @@ Los nodos críticos se rehacen con `criticas_preparar.py` (respaldo, giro de L1,
 El flujo que recrea la placa desde cero está en `generadores/pcb/` (`rehacer1.py` → `situs.py` → `fanout_altium.py` →
 `aplicar_rutas.py` → `post6.py` → `designadores2.py`). Necesita la VM de Altium y `generadores/herramientas/` (`boton.*`,
 `teclas.py`, `qga.py`, `mcpc.py`). `huellas_todas.txt` es la especificación de las 17 huellas ya con los THT corregidos.
-La auditoría quedó en `auditoria.py` (placa y esquemático) y `auditoria_salidas.py` (OutJob y salidas).
+La auditoría quedó en `auditoria.py` (placa y esquemático) y `auditoria_salidas.py` (OutJob y salidas). Además:
+- `lcsc_esquematico.py` escribe los LCSC del BOM en el esquemático.
+- `clases_red.py` repone las clases de red de la placa (ver la nota sobre «Update PCB»).
 
 ## Auditoría (01/11/2026)
 
@@ -119,13 +134,15 @@ capacidades de JLCPCB. Hallazgos, de más a menos grave:
 | 1 | **Gerber inservibles.** `Fabricacion.OutJob` tenía «Add to all plots» con todas las capas eléctricas: cada Gerber de cobre, plano y serigrafía llevaba las pistas de las tres capas de ruteo y el pour de Top; máscara, pasta y cobre llevaban los designadores. | OutJob reescrito con las claves de los OutJob de ejemplo de Altium 26. Verificado capa por capa: cada una lleva solo lo suyo. |
 | 2 | **Taladro desalineado.** Los Gerber salían centrados en el film (x ≈ 219 mm) y el taladro relativo al origen (0–70 mm): ninguna de las 188 vías calzaba con su pad. | `CentrePlots=False` y origen relativo: los 233 agujeros calzan con su pad. |
 | 3 | **Plano GND negativo y nombres ambiguos.** JLCPCB no busca `.GP1` ni procesa bien Gerber negativos, y `.G1` + `.GP1` no deja claro el orden. La opción de Altium para plano positivo lo dibuja sin antipads (cortocircuito). | `jlcpcb.py` pasa el plano a positivo y lo nombra `.G2L`; Señal-Potencia `.G3L`. Verificado: 97 agujeros de otras redes despejados y 136 de GND con alivio. |
-| 4 | **Cristal fuera de especificación.** ABM8 de 18 pF a 25 MHz: gm crítico de 2,18 mA/V con ESR 50 Ω y C0 3 pF (peor caso de Abracon), sobre el máximo de 1,5 mA/V del oscilador HSE (AN2867); además puede pasar el nivel de excitación máximo de 100 µW. | ABM8-25.000MHZ-10-D1G-T (CL 10 pF, −40…85 °C): 0,83 mA/V. C22/C23 de 27 pF a 12 pF (GRM1885C1H120JA01D). |
-| 5 | **L2 (alimentación de la antena) resuena bajo la banda GPS.** LQG18HN47NJ00D tiene SRF ≥ 1,2 GHz: a 1,575 GHz puede ser capacitiva y cargar RF_IN. | LQW18AN47NJ00D: bobinada, mismos 47 nH del circuito de ZKW y misma huella 0603, SRF ≥ 2,6 GHz. |
-| 6 | **Ranuras en el plano GND.** Antipads de 0,508 mm desde el agujero: 8 grupos de antipads unidos bajo el MCU (hasta 3,3 × 2,1 mm). | Power Plane Clearance de 0,3 mm (JLCPCB pide ≥ 0,2 mm en vías y 0,3 mm en pads): quedan 2 grupos. |
-| 7 | **DRC incompleto.** El designador de L2 tocaba la máscara de los pads 14 y 15 de U6; el «DRC 0» anterior no lo mostraba. | Designador movido sobre L2; DRC 0 completo. |
-| 8 | **BOM sin fabricante ni MPN.** | BOM agrupado por número de parte, con fabricante y MPN. |
-| 9 | **RF_IN: el «≈ 49 Ω» publicado salió de una interpolación mal hecha.** | Resolviendo el campo 2D (diferencias finitas, validado contra Hammerstad): 51,3 Ω como microstrip desnuda y **48,1 Ω reales** con máscara y el GND de Top a 0,39 mm. Con 5 mm (≈ 0,05 λ) la pérdida de retorno es > 39 dB: queda como está. |
-| 10 | Sin identificación de placa. | «ELO301 G1 v1.1 2026-11» en la serigrafía inferior. |
+| 4 | **Pista interna sin anillo en J1-1.** La pista de 12 V (0,6 mm) de Señal-Potencia une J1-1 con J1-2 y es la única conexión de J1-2. Al generar las salidas, Altium dio por desconectado el pad interno de J1-1 y lo omitió del `.G1`: el taladro de 1,0 mm habría cortado la pista y J1-2 podía quedar abierto. | Tras recalcular la conectividad (Update PCB), el Gerber trae el anillo. `jlcpcb.py` ahora rechaza todo agujero al que llegue una pista sin pad en esa capa (el paquete anterior no pasa). |
+| 5 | **Cristal fuera de especificación.** ABM8 de 18 pF a 25 MHz: gm crítico de 2,18 mA/V con ESR 50 Ω y C0 3 pF (peor caso de Abracon), sobre el máximo de 1,5 mA/V del oscilador HSE (DS12589, tabla 42); además puede pasar el nivel de excitación máximo de 100 µW. | ABM8-25.000MHZ-10-D1G-T (CL 10 pF, −40…85 °C): 0,83 mA/V, margen de 1,8×. C22/C23 de 27 pF a 12 pF C0G: Samsung CL10C120JB8NNNC, porque el GRM1885C1H120JA01D equivalente no tiene stock en JLCPCB. |
+| 6 | **L2 (alimentación de la antena) resuena bajo la banda GPS.** LQG18HN47NJ00D tiene SRF ≥ 1,2 GHz: a 1,575 GHz puede ser capacitiva y cargar RF_IN. | LQW18AN47NJ00D: bobinada, mismos 47 nH del circuito de ZKW y misma huella 0603, SRF ≥ 2,6 GHz. |
+| 7 | **Ranuras en el plano GND.** Antipads de 0,508 mm desde el agujero: 8 grupos de antipads unidos bajo el MCU (hasta 3,3 × 2,1 mm). | Power Plane Clearance de 0,3 mm (JLCPCB pide ≥ 0,2 mm en vías y 0,3 mm en pads): quedan 2 grupos. |
+| 8 | **DRC incompleto.** El designador de L2 tocaba la máscara de los pads 14 y 15 de U6; el «DRC 0» anterior no lo mostraba. | Designador movido sobre L2; DRC 0 completo. |
+| 9 | **OutJob fuera del proyecto.** `Fabricacion.OutJob` y `Documentacion.OutJob` no estaban en el `.PrjPcb`: abiertos sueltos quedan en «Free Documents» y «Generate» termina «bien» sin escribir ningún archivo. | Agregados al proyecto. |
+| 10 | **BOM sin fabricante, MPN ni LCSC.** J1/J2 eran tiras BOOMELE de 40 pines, que JLCPCB no puede cortar ni armar. | BOM agrupado por número de parte, con fabricante, MPN y LCSC (también en el esquemático y en la placa). J1/J2: headers XFCN PZ254V-11-14P y PZ254V-11-05P. |
+| 11 | **RF_IN: el «≈ 49 Ω» publicado salió de una interpolación mal hecha.** | Resolviendo el campo 2D (diferencias finitas, validado contra Hammerstad): 51,3 Ω como microstrip desnuda y **48,1 Ω reales** con máscara y el GND de Top a 0,39 mm. Con 5 mm (≈ 0,05 λ) la pérdida de retorno es > 39 dB: queda como está. |
+| 12 | Sin identificación de placa. | «ELO301 G1 v1.1 2026-11» en la serigrafía inferior. |
 
 **Revisado sin cambios:**
 - **Conexiones:** los 48 pines del MCU contra la Tabla 9 y el J1 contra la Tabla 5.
@@ -142,8 +159,11 @@ capacidades de JLCPCB. Hallazgos, de más a menos grave:
   (`5A 05 0A 01 6A` y guardar con `5A 04 11 6F`) y después revisar su dirección con un escaneo I2C.
 - **PB4 (SPI3_MISO) y PB6 (LED):** tienen activo desde el reset el pull-down de 5,1 kΩ de «dead battery» del UCPD. Para
   quitarlo hay que poner UCPD1_DBDIS = 1 en PWR_CR3 al arrancar; en HAL es `HAL_PWREx_DisableUCPDDeadBattery()`.
-- **Parámetros MPN en la PCB:** la placa todavía guarda los MPN viejos de Y1, C22, C23 y L2. «Design ▸ Update PCB Document»
-  los sincroniza, y no afectan las salidas. El símbolo de Y1 sigue llamándose ABM8-25.000MHZ-B2-T.
+- **«Update PCB» y las clases de red:** la placa ya guarda fabricante, MPN y LCSC (se sincronizó el 01/11/2026).
+  - **Riesgo:** las clases «Alimentacion» y «Potencia» existen solo en la placa y las usan las reglas `Ancho_*`, así que
+    el ECO propone borrarlas («Remove Net Classes»). Si se borran, el DRC sigue en 0 pero esas reglas dejan de aplicar.
+  - **Qué hacer:** desmarcar ese grupo en el ECO. Si igual se borran, `generadores/pcb/clases_red.py` las repone.
+  - **Y1:** su símbolo sigue llamándose ABM8-25.000MHZ-B2-T.
 
 **Fuentes:** [capacidades de JLCPCB](https://jlcpcb.com/capabilities/pcb-capabilities),
 [nombres de archivo de JLCPCB](https://jlcpcb.com/help/article/suggested-naming-patterns),
@@ -151,16 +171,17 @@ capacidades de JLCPCB. Hallazgos, de más a menos grave:
 [ZKW ATGM336H-5N](https://atta.szlcsc.com/upload/public/pdf/source/20161226/1482720799860.pdf),
 [LQG18HN47NJ00D](https://es.farnell.com/en-ES/murata/lqg18hn47nj00d/inductor-47nh-0603-case/dp/1515390),
 [LQW18AN47NJ00D](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/6/47nH_5F00_LQW18AN47NJ00.PDF),
-[Gm_crit_max de ST](https://community.st.com/s/question/0D50X0000A1mqBf/to-wich-parameter-refers-hse-oscillator-characteristic-gm-in-stm32l443-datasheet-on-page-123-does-it-refer-to-an2867-parameter-gm-or-to-gmcritmax),
+[STM32G431, DS12589 tabla 42](https://www.st.com/resource/en/datasheet/stm32g431cb.pdf),
+[piezas de JLCPCB](https://jlcpcb.com/parts),
 [TFmini-S](https://waveshare.com/wiki/TFmini-S_LiDAR_Range_Sensor),
 [UCPD dead battery](https://community.st.com/t5/stm32-mcus-products/gpio-status-during-bootmode/td-p/827730).
 
 ### Para revisar antes de mandar a fabricar
 
-1. Subir `ELO301_G1_Gerber_JLCPCB.zip` a JLCPCB y revisar el visor: la capa 2 debe verse como plano GND con antipads.
-2. Confirmar el Gm_critmax del STM32G431 en la tabla HSE de su hoja de datos (no se pudo descargar; 1,5 mA/V es el de la familia).
-3. Completar los LCSC del BOM y revisar las rotaciones del CPL en la vista previa, si se arma en JLCPCB.
-4. Exportar el esquemático a PDF (`Documentacion.OutJob`; Altium se colgó al publicarlo).
+1. Revisar el zip en el «Gerber Viewer» de JLCPCB (pide una cuenta). La capa 2 debe verse como plano GND con antipads y
+   alivios. Aclarar también los 4 agujeros sin metalizar que cuenta JLCPCB (el taladro tiene 2).
+2. Si se arma en JLCPCB, revisar las rotaciones del CPL en su vista previa de armado.
+3. Exportar el esquemático a PDF (`Documentacion.OutJob`; Altium se colgó al publicarlo).
 
 ## Generadores
 

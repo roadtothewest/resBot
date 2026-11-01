@@ -2,6 +2,19 @@
 FileName = ELO301_G1.GBR
 AutoAperture = True
 *************************************************************
+Generating : Top Overlay
+      File : ELO301_G1.GTO
+
+    Adding Layer      : Top Overlay
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+*************************************************************
+
+*************************************************************
 Generating : Senal-Potencia
       File : ELO301_G1.G1
 
@@ -16,21 +29,53 @@ Used DCodes :
     D63
     D67
     D69
+    D70
     D72
 *************************************************************
 
 *************************************************************
-Generating : Bottom Solder
-      File : ELO301_G1.GBS
+Generating : Bottom Overlay
+      File : ELO301_G1.GBO
 
-    Adding Layer      : Bottom Solder
+    Adding Layer      : Bottom Overlay
 
-    Adding Layer      : Bottom Layer
+
+Used DCodes :
+    D10
+    D12
+*************************************************************
+
+*************************************************************
+Generating : Top Solder
+      File : ELO301_G1.GTS
+
+    Adding Layer      : Top Solder
+
+    Adding Layer      : Top Layer
 
     Adding Layer      : Multi-Layer
 
 
 Used DCodes :
+    D32
+    D33
+    D34
+    D35
+    D36
+    D37
+    D38
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+    D45
+    D46
+    D47
+    D48
+    D49
+    D50
     D51
     D52
     D53
@@ -39,26 +84,6 @@ Used DCodes :
     D56
     D57
     D58
-*************************************************************
-
-*************************************************************
-Generating : GND
-      File : ELO301_G1.GP1
-
-    Adding Layer      : GND
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D73
-    D74
-    D75
-    D76
-    D77
-    D78
-    D79
-    D80
 *************************************************************
 
 *************************************************************
@@ -92,6 +117,44 @@ Used DCodes :
     D29
     D30
     D31
+*************************************************************
+
+*************************************************************
+Generating : Bottom Layer
+      File : ELO301_G1.GBL
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D59
+    D61
+    D63
+    D64
+    D65
+    D66
+    D67
+    D68
+    D69
+    D70
+    D71
+    D72
+*************************************************************
+
+*************************************************************
+Generating : Bottom Paste
+      File : ELO301_G1.GBP
+
+    Adding Layer      : Bottom Paste
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
 *************************************************************
 
 *************************************************************
@@ -140,8 +203,30 @@ Used DCodes :
 *************************************************************
 
 *************************************************************
-Generating : Bottom Layer
-      File : ELO301_G1.GBL
+Generating : GND
+      File : ELO301_G1.GP1
+
+    Adding Layer      : GND
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D73
+    D74
+    D75
+    D76
+    D77
+    D78
+    D79
+    D80
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : ELO301_G1.GBS
+
+    Adding Layer      : Bottom Solder
 
     Adding Layer      : Bottom Layer
 
@@ -149,51 +234,6 @@ Generating : Bottom Layer
 
 
 Used DCodes :
-    D59
-    D61
-    D63
-    D64
-    D65
-    D66
-    D67
-    D68
-    D69
-    D70
-    D71
-    D72
-*************************************************************
-
-*************************************************************
-Generating : Top Solder
-      File : ELO301_G1.GTS
-
-    Adding Layer      : Top Solder
-
-    Adding Layer      : Top Layer
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D32
-    D33
-    D34
-    D35
-    D36
-    D37
-    D38
-    D39
-    D40
-    D41
-    D42
-    D43
-    D44
-    D45
-    D46
-    D47
-    D48
-    D49
-    D50
     D51
     D52
     D53
@@ -202,45 +242,6 @@ Used DCodes :
     D56
     D57
     D58
-*************************************************************
-
-*************************************************************
-Generating : Bottom Overlay
-      File : ELO301_G1.GBO
-
-    Adding Layer      : Bottom Overlay
-
-
-Used DCodes :
-    D10
-    D12
-*************************************************************
-
-*************************************************************
-Generating : Bottom Paste
-      File : ELO301_G1.GBP
-
-    Adding Layer      : Bottom Paste
-
-    Adding Layer      : Bottom Layer
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-*************************************************************
-
-*************************************************************
-Generating : Top Overlay
-      File : ELO301_G1.GTO
-
-    Adding Layer      : Top Overlay
-
-
-Used DCodes :
-    D10
-    D11
-    D12
 *************************************************************
 
 *************************************************************

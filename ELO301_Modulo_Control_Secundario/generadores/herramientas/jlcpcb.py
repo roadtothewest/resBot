@@ -7,10 +7,11 @@ Uso: python3 jlcpcb.py <carpeta Fabricacion de Altium> <carpeta destino>
   toda la placa y el contenido original en polaridad clara) y se nombra .G2L. La capa Señal-Potencia (.G1) pasa a .G3L y el
   contorno (.GM) a .GKO, los nombres que JLCPCB documenta para 4 capas.
 - Verifica que el contorno parta en (0,0) igual que el taladro, que cada agujero metalizado tenga su pad en Top y Bottom y
-  su antipad o alivio en el plano, y que las capas no se repitan entre sí (el OutJob viejo las mezclaba).
+  su antipad o alivio en el plano, que todo agujero al que llega una pista tenga pad en esa capa (también en la interna)
+  y que las capas no se repitan entre sí (el OutJob viejo las mezclaba).
 - Escribe el CPL (Designator, Mid X, Mid Y, Layer, Rotation) desde el Pick and Place en CSV y mm.
 """
-import csv, glob, os, re, sys, zipfile
+import csv, glob, math, os, re, sys, zipfile
 
 BASE = 'ELO301_G1'
 NOMBRES = {'GTL': 'GTL', 'GTS': 'GTS', 'GTO': 'GTO', 'GTP': 'GTP', 'GP1': 'G2L', 'G1': 'G3L', 'GBL': 'GBL', 'GBS': 'GBS', 'GBO': 'GBO', 'GBP': 'GBP', 'GM': 'GKO'}
@@ -78,6 +79,13 @@ def main(origen, destino):
         p = [o[:2] for o in comandos(g[e]) if o[2] == 3]
         sin = [h for h in hs if (h[3] or e == 'GP1') and not any(abs(h[0] - q[0]) < 0.01 and abs(h[1] - q[1]) < 0.01 for q in p)]
         if sin: fallas.append(f'{len(sin)} agujeros sin pad/antipad en {e}, p. ej. {sin[:3]}')
+    # en capas internas Altium omite los pads que cree sin conexión; si llega una pista, el taladro la cortaría sin anillo
+    for e in ('GTL', 'G1', 'GBL'):
+        ops = comandos(g[e])
+        p = [o[:2] for o in ops if o[2] == 3]
+        ext = [q for a, b in zip(ops, ops[1:]) if b[2] == 1 and not b[4] for q in (a[:2], b[:2])]
+        sin = [h for h in hs if h[3] and any(math.dist(h[:2], q) < h[2] / 2 for q in ext) and not any(math.dist(h[:2], q) < 0.01 for q in p)]
+        if sin: fallas.append(f'{len(sin)} agujeros con pista y sin pad en {e} (el taladro cortaría la pista), p. ej. {sin[:3]}')
     lineas = {e: {(round(a[0], 3), round(a[1], 3), round(b[0], 3), round(b[1], 3)) for a, b in zip(comandos(g[e]), comandos(g[e])[1:]) if b[2] == 1 and not b[4] and a[:2] != b[:2]} for e in ('GTL', 'G1', 'GBL', 'GTO', 'GBO')}
     for a in lineas:
         for b in lineas:
@@ -97,7 +105,7 @@ def main(origen, destino):
            for f in filas[i + 1:] if f and not f[0].startswith('H')]
     with open(os.path.join(destino, f'CPL_{BASE}_JLCPCB.csv'), 'w', newline='') as fo:
         csv.writer(fo).writerows([['Designator', 'Mid X', 'Mid Y', 'Layer', 'Rotation']] + cpl)
-    print(f'OK: contorno {x1:.2f} x {y1:.2f} mm en (0,0); {len(hs)} agujeros con pad y antipad/alivio; capas sin mezclar; plano en positivo.')
+    print(f'OK: contorno {x1:.2f} x {y1:.2f} mm en (0,0); {len(hs)} agujeros con pad y antipad/alivio; pistas con anillo; capas sin mezclar; plano en positivo.')
     print(f'{zp} ({len(NOMBRES) + 1} archivos) y CPL con {len(cpl)} piezas.')
 
 
