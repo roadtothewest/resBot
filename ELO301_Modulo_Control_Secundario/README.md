@@ -112,3 +112,7 @@ cambios.
 1. Corregir los puntos de revisión del PCB (arriba).
 2. Salidas de fabricación: Gerber, taladros NC, pick and place y BOM.
 3. Exportar el esquemático a PDF.
+
+## Paquete Altium por etapas (para revisar y modificar)
+`ELO301_G1_Altium_por_etapas.zip`: 4 proyectos Altium completos (esquemático → PCB ruteado → nodos críticos → final con costura y fabricación), con su `LEEME.md` de importación. Abrir `ELO301_G1.PrjPcb` de la etapa deseada; la etapa 4 es la vigente.
+**RF_IN:** 0,35 mm sobre prepreg de 8,28 mil (εr 4,4) y plano GND ≈ 49 Ω (para 50 Ω exactos, 0,364 mm); confirmar con la calculadora del fabricante.
