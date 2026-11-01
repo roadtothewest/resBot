@@ -18,7 +18,7 @@ OutputEnabled1=1
 OutputEnabled1_OutputMedium1=1
 OutputDefault1=0
 Configuration1_Name1=OutputConfigurationParameter1
-Configuration1_Item1=AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16842753~1,16842751~1,16973830~1,16973831~1,16973832~1,16973833~1,16973834~1,16973835~1,16973848~1|GerberUnit=Metric|NumberOfDecimals=5|OriginPosition=Absolute|Plot.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16842753~1,16842751~1,16973830~1,16973831~1,16973832~1,16973833~1,16973834~1,16973835~1,16973848~1|PlotBoardProfile=True|PlotUsedDrillDrawingLayerPairs=False|Record=GerberView
+Configuration1_Item1=AddToAllLayerClasses.Set= |AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TLayerToBoolean|CentrePlots=False|DrillDrawingSymbol=GraphicsSymbol|DrillDrawingSymbolSize=500000|EmbeddedApertures=True|FilmBorderSize=10000000|FilmXSize=200000000|FilmYSize=160000000|FlashAllFills=False|FlashPadShapes=True|G54OnApertureChange=False|GenerateDRCRulesFile=False|GenerateReliefShapes=True|GerberUnit=Metric|IncludeUnconnectedMidLayerPads=False|LayerClassesMirror.Set= |LayerClassesPlot.Set= |LeadingAndTrailingZeroesMode=SuppressLeadingZeroes|MaxApertureSize=2500000|MinusApertureTolerance=50|Mirror.Set=SerializeLayerHash.Version~2,ClassName~TLayerToBoolean|MirrorDrillDrawingPlots=False|MirrorDrillGuidePlots=False|NumberOfDecimals=5|OptimizeChangeLocationCommands=True|OriginPosition=Relative|Panelize=False|Plot.Set=SerializeLayerHash.Version~2,ClassName~TLayerToBoolean,16777217~1,16777218~1,16842753~1,16842751~1,16973830~1,16973831~1,16973832~1,16973833~1,16973834~1,16973835~1|PlotBoardProfile=True|PlotPositivePlaneLayers=False|PlotUsedDrillDrawingLayerPairs=False|PlotUsedDrillGuideLayerPairs=False|PlusApertureTolerance=50|Record=GerberView|SoftwareArcs=False|Sorted=False
 OutputType2=NC Drill
 OutputName2=NC Drill Files
 OutputCategory2=Fabrication
@@ -35,6 +35,8 @@ OutputVariantName3=
 OutputEnabled3=1
 OutputEnabled3_OutputMedium1=1
 OutputDefault3=0
+Configuration3_Name1=OutputConfigurationParameter1
+Configuration3_Item1=Record=PickPlaceView|Units=Metric|GenerateCSVFormat=True|GenerateTextFormat=False
 OutputType4=Bill of Materials
 OutputName4=Bill of Materials
 OutputCategory4=Assembly
