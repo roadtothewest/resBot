@@ -10,7 +10,7 @@ con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 |---|---|
 | Esquemático | 4 hojas, 68 componentes |
 | ERC | **0 errores**, 3 advertencias esperadas* |
-| Componentes | Cada uno con huella, valor, fabricante, número de parte y código LCSC, también en la placa |
+| Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), ver [metadatos DigiKey](#metadatos-digikey-02112026). La placa todavía tiene los parámetros anteriores: falta «Update PCB» |
 | PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, 68 componentes colocados, ruteo completo, plano y pours de GND. **DRC: 0 violaciones** |
 | Salidas de fabricación | Regeneradas y verificadas, también en el cotizador de JLCPCB: paquete para JLCPCB, BOM con MPN y LCSC, y CPL ([detalle](#salidas-de-fabricación-fabricacion)) |
 
@@ -29,11 +29,45 @@ En Altium Designer, abrir `altium/ELO301_G1.PrjPcb`. Las bibliotecas van en la m
 
 - **`CAP/RESISTOR/INDUCTOR/DIODE - GENERIC.SchLib`, `C0603 - MURATA.PcbLib` y `R0603 - YAGEO.PcbLib`:** bibliotecas
   RCL del profesor (github.com/linitrofe/ELO301.Hw.Altium).
-- **`ELO301_G1.SchLib` / `ELO301_G1.PcbLib`:** 16 símbolos y 17 huellas convertidos desde las bibliotecas oficiales de
-  KiCad 10 (huellas IPC). Siguen las capas del profesor: Mech 13 para ensamble, Mech 15 para courtyard y Mech 29 para
-  el designador.
-  - La BMI270 se verificó contra la hoja de datos de Bosch (tabla 22).
-  - El ATGM336H se verificó contra el manual de ZKW: usa la huella del u-blox MAX y pines propios.
+- **`<TIPO> - <MPN>.SchLib`** (por ejemplo `MCU - STM32G431CBT6.SchLib`): un símbolo por pieza, como en el proyecto
+  de referencia del profesor, con los parámetros de DigiKey y la huella enlazada. `LED - GENERIC`, `FERRITE - GENERIC` y
+  `MOUNTING HOLE - M3` son genéricos: sus datos de fabricante van en cada instancia, igual que en los RCL del profesor.
+- **`ELO301_G1.PcbLib`:** 17 huellas convertidas desde las bibliotecas oficiales de KiCad 10 (huellas IPC). Siguen las
+  capas del profesor: Mech 13 para ensamble, Mech 15 para courtyard y Mech 29 para el designador.
+
+## Metadatos DigiKey (02/11/2026)
+
+El ramo pide componentes de DigiKey. Cada línea del BOM se buscó en DigiKey y sus datos quedaron en
+[`generadores/digikey/metadatos_digikey.tsv`](generadores/digikey/metadatos_digikey.tsv). Desde ahí se escriben en el
+símbolo y en cada componente del esquemático: `Supplier 1` = DigiKey y `Supplier Part Number 1` (el código CT-ND), con
+descripción, categoría, encapsulado, rango de temperatura, estado y enlaces a la hoja de datos y a DigiKey. LCSC queda
+como `Supplier 2`.
+
+- **Excepciones con LCSC como `Supplier 1`:**
+  - ATGM336H-5N31: no se vende en DigiKey, igual que en el documento de diseño.
+  - J1/J2: tira BOOMELE 2.54-1×40P (C2337), estándar del ramo, en vez de los headers XFCN de la auditoría.
+- **Reemplazos por piezas obsoletas en DigiKey** (mismo tamaño 0603):
+
+  | Designadores | Antes (obsoleto) | Ahora | DigiKey |
+  |---|---|---|---|
+  | 12 × 100 nF | GRM188R71H104KA93D | GCM188R71H104KA57D (50 V X7R) | 490-4779-1-ND |
+  | C8–C11, C18 (1 µF) | GRM188R61E105KA12D | GCM188R71E105KA64D (25 V X7R) | 490-10673-1-ND |
+  | C16 (4,7 µF) | GRM188R61A475KE15D | GRM188R61C475ME11J (16 V X5R) | 490-GRM188R61C475ME11JCT-ND |
+
+  El 12 pF sigue siendo el Samsung CL10C120JB8NNNC: el GRM1885C1H120JA01D de Murata está como «Not For New Designs».
+- **Pinouts revisados contra el fabricante:** STM32G431CBT6 (STM32_open_pin_data de ST), AP63205 (DS41326), TLV755P
+  (tabla 4-1), BMI270 (tabla 22) y ATGM336H (manual de ZKW, pág. 10). Todos coinciden.
+  - **Cambios:** se agregaron los nombres de ST a los pines con función fija (`PG10-NRST`, `PB8-BOOT0`, `PF0-OSC_IN`…),
+    VSS 35/47 pasaron a alimentación, Y1 pasó a llamarse ABM8-25.000MHZ-10-D1G-T y se asignó el designador de cada tipo.
+- **Verificación:** el proyecto compila y la netlist aplanada es idéntica a la del commit anterior (72 redes, 247 pines).
+
+Para regenerar todo, con Altium abierto: `correr.ps1 -Proc CrearBibliotecas`, `correr.ps1 -Proc ActualizarEsquematico`
+y `proyecto_bibliotecas.ps1`. Los scripts están en `generadores/digikey/`.
+
+**Pendiente:**
+- «Update PCB» para llevar los parámetros a la placa (ver la nota sobre las clases de red).
+- Regenerar el BOM de `fabricacion/` (todavía tiene los MPN anteriores y LCSC).
+- Pasar el documento de diseño a DigiKey (la v5 cotiza en Mouser).
 
 ## Decisiones para revisar en grupo
 

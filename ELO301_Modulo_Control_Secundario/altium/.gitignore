@@ -1,0 +1,5 @@
+# Respaldos automáticos que Altium crea al guardar
+History/
+__Previews/
+*.SchDocPreview
+*.PcbDocPreview
