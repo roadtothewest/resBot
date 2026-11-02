@@ -1,0 +1,8 @@
+# Respaldos automáticos que Altium crea al guardar
+History/
+__Previews/
+*.SchDocPreview
+*.PcbDocPreview
+# Informes y registros que Altium genera al compilar o correr el DRC
+Project Outputs for */
+Project Logs for */
