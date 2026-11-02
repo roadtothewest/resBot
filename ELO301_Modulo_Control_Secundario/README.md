@@ -162,7 +162,7 @@ El documento de diseño no define estos puntos:
 8. **Protección de entrada:** el TVS va después del diodo serie, y el divisor de monitoreo mide la tensión ya protegida
    (VIN_PROT).
 9. **Cambios de la auditoría** (cristal de 10 pF, L2 bobinada, antipads de 0,3 mm): ver la [auditoría](#auditoría-01112026).
-   Se revierten partiendo de la etapa 4 del paquete por etapas.
+   Se revierten partiendo de la etapa 4 del paquete por etapas, con el `Fabricacion.OutJob` de la etapa 5.
 
 ## PCB
 
@@ -310,6 +310,6 @@ cambios.
 
 ## Paquete Altium por etapas (para revisar y modificar)
 
-`ELO301_G1_Altium_por_etapas.zip`: 5 proyectos Altium completos (esquemático → PCB ruteado → nodos críticos → costura y
-fabricación → auditoría), con su `LEEME.md` de importación. Abrir `ELO301_G1.PrjPcb` de la etapa deseada; **la etapa 5
+`ELO301_G1_Altium_por_etapas.zip`: 5 proyectos Altium completos (esquemático → PCB ruteado → nodos críticos → costura de
+GND → auditoría y fabricación), con su `LEEME.md` de importación. Abrir `ELO301_G1.PrjPcb` de la etapa deseada; **la etapa 5
 es la vigente**.
