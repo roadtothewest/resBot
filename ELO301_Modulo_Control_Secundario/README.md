@@ -23,6 +23,56 @@ con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 | [03 Sensores](esquematicos/03_Sensores.png) | IMU BMI270 por SPI1, GNSS ATGM336H por USART2 + PPS con antena activa por U.FL (alimentada desde VCC_RF por L2), conector JST del ToF por I2C2 con pull-ups de 4,7k |
 | [04 Conectores](esquematicos/04_Conectores.png) | Expansión 1x14 (Tabla 5), SWD 1x5, 4 JST XH 5P para los FOC con 33 Ω en serie, 4 agujeros M3 |
 
+## Pendientes (02/11/2026)
+
+**Antes de fabricar**
+
+1. **Regenerar las salidas de fabricación:** Gerber, taladro y Pick & Place con `Fabricacion.OutJob`, y el BOM desde
+   `generadores/digikey/metadatos_digikey.tsv`. Las de `fabricacion/` son de la placa del 01/11.
+   - El paquete para JLCPCB lo arma `jlcpcb.py`, que necesita Python.
+2. **Coordinar H3/H4 con la motherboard:** M3 en (3,3 ; 38,6) y (66,7 ; 38,6) mm desde el origen de la placa (esquina
+   inferior izquierda). Los separadores de la motherboard deben coincidir.
+3. Revisar los puntos de [«Para revisar antes de mandar a fabricar»](#para-revisar-antes-de-mandar-a-fabricar): Gerber
+   Viewer de JLCPCB, rotaciones del CPL y PDF del esquemático.
+
+**Documentación**
+
+4. **Documento de diseño v6** (nivel sistema, sin layout), a partir de `Documento_de_Diseno_ELO301_Grupo1_v5.docx`:
+   - Tablas 3 y 8 con los códigos de DigiKey (la v5 cotiza en Mouser).
+   - Capacitores reemplazados.
+   - Cristal ABM8-25.000MHZ-10-D1G-T con 2 × 12 pF.
+   - L2 LQW18AN47NJ00D.
+   - Tira BOOMELE.
+   - 4 perforaciones M3.
+   - Costos (Tabla 7) y fila nueva de revisión.
+5. Exportar el esquemático a PDF y regenerar las imágenes de `esquematicos/`: son anteriores a estos cambios.
+6. Actualizar o retirar `ELO301_G1_Altium_por_etapas.zip`: su etapa 5 ya no es la versión vigente.
+
+**Método del ramo (según las cápsulas del profesor)**
+
+7. **ActiveBOM:** crear el `.BomDoc` («+ Create» en el proyecto) con DigiKey como proveedor favorito, como en el
+   proyecto de referencia del profesor. Los parámetros `Supplier 1` / `Supplier Part Number 1` ya están cargados.
+8. **Huellas:** las de `ELO301_G1.PcbLib` se convirtieron desde KiCad, no con el IPC Compliant Footprint Wizard.
+   Rehacerlas con el wizard a partir de las hojas de datos de DigiKey, en especial:
+   - LGA-14: hoy cita la hoja de la BMI160.
+   - ABM8: cita la ABM8G.
+   - J1/J2: usar la huella de pin header que entregó el profesor.
+9. **Esquemático modular (jerárquico):**
+   - Hoja superior con un bloque por módulo: alimentación, MCU, sensores, sistema superior (SPI de entrada) y un canal
+     FOC repetido 4 veces con `Repeat(FOC,1,4)`.
+   - Hoy son 4 hojas planas unidas por etiquetas globales.
+   - Para no perder el ruteo, re-asociar los componentes con *Project » Component Links*.
+
+**Diseño**
+
+10. **Interfaz de servicio:** el registro de especificaciones pide USB o UART/serial, y el diseño solo tiene
+    diagnóstico por SPI. Una opción es USART1 en PB6/PB7, moviendo el LED a un pin libre (verificar en CubeMX).
+11. **Clases de red:** el ECO siempre propone quitar `Potencia` y `Alimentacion` porque solo existen en la placa.
+    Definirlas en el esquemático (directivas de clase) o reponerlas con `Placa.pas` (`ClasesDeRed`) tras cada
+    Update PCB.
+12. **Rama V3V3_SENS a la IMU:** sigue por el borde superior (~45 mm), porque el abanico SPI del MCU bloquea el camino
+    directo. Mejorarla requiere mover la IMU o reordenar capas del abanico.
+
 ## Abrir el proyecto
 
 En Altium Designer, abrir `altium/ELO301_G1.PrjPcb`. Las bibliotecas van en la misma carpeta y se cargan solas.
@@ -254,9 +304,9 @@ cambios.
 
 ## Siguientes pasos
 
-1. Revisión en grupo de los cambios de la auditoría y de las decisiones de arriba.
-2. Pedido de prueba en JLCPCB (puntos de «Para revisar antes de mandar a fabricar»).
-3. Exportar el esquemático a PDF.
+1. Revisión en grupo de los cambios del 02/11 (metadatos DigiKey y placa) y de las decisiones de arriba.
+2. Los [pendientes](#pendientes-02112026), empezando por regenerar las salidas de fabricación y el documento v6.
+3. Pedido de prueba (puntos de «Para revisar antes de mandar a fabricar»).
 
 ## Paquete Altium por etapas (para revisar y modificar)
 
