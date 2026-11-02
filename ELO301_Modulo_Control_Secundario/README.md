@@ -4,15 +4,15 @@ Esquemático y PCB en Altium Designer 26 del módulo de control secundario del r
 motherboard junto a la Radxa Zero 3W. Implementa el [Documento de Diseño v5](docs/Documento_de_Diseno_ELO301_Grupo1_v5.pdf)
 con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 
-## Estado (01/11/2026)
+## Estado (02/11/2026)
 
 | Ítem | Estado |
 |---|---|
-| Esquemático | 4 hojas, 68 componentes |
+| Esquemático | 4 hojas, 70 componentes (H3/H4 nuevos) |
 | ERC | **0 errores**, 3 advertencias esperadas* |
-| Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), ver [metadatos DigiKey](#metadatos-digikey-02112026). La placa todavía tiene los parámetros anteriores: falta «Update PCB» |
-| PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, 68 componentes colocados, ruteo completo, plano y pours de GND. **DRC: 0 violaciones** |
-| Salidas de fabricación | Regeneradas y verificadas, también en el cotizador de JLCPCB: paquete para JLCPCB, BOM con MPN y LCSC, y CPL ([detalle](#salidas-de-fabricación-fabricacion)) |
+| Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), también en la placa. Ver [metadatos DigiKey](#metadatos-digikey-02112026) |
+| PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, 70 componentes, ruteo completo, GND en las capas 2 y 3 y pours en Top y Bottom. **DRC: 0 violaciones**. Ver [cambios de placa](#cambios-de-placa-02112026) |
+| Salidas de fabricación | **Desactualizadas**: corresponden a la placa del 01/11. Hay que regenerarlas ([detalle](#salidas-de-fabricación-fabricacion)) |
 
 \* GNSS_PPS y UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU, y el nRESET del GNSS solo tiene su pull-up.
 
@@ -21,7 +21,7 @@ con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 | [01 Alimentación](esquematicos/01_Alimentacion.png) | 12 V con B240A en serie y TVS SMAJ15A, buck AP63205 a 5 V, LDO TLV75533 para MCU y para sensores (con ferrita), LED de encendido, divisor 100k/12k + 100 nF hacia PA1 |
 | [02 MCU](esquematicos/02_MCU.png) | STM32G431CBT6 con los 29 pines de la Tabla 9, desacoplos, VDDA con ferrita, cristal de 25 MHz (CL 10 pF, 2 × 12 pF), NRST y BOOT0 con pulsadores, LED heartbeat en PB6 |
 | [03 Sensores](esquematicos/03_Sensores.png) | IMU BMI270 por SPI1, GNSS ATGM336H por USART2 + PPS con antena activa por U.FL (alimentada desde VCC_RF por L2), conector JST del ToF por I2C2 con pull-ups de 4,7k |
-| [04 Conectores](esquematicos/04_Conectores.png) | Expansión 1x14 (Tabla 5), SWD 1x5, 4 JST XH 5P para los FOC con 33 Ω en serie, 2 agujeros M3 |
+| [04 Conectores](esquematicos/04_Conectores.png) | Expansión 1x14 (Tabla 5), SWD 1x5, 4 JST XH 5P para los FOC con 33 Ω en serie, 4 agujeros M3 |
 
 ## Abrir el proyecto
 
@@ -65,9 +65,32 @@ Para regenerar todo, con Altium abierto: `correr.ps1 -Proc CrearBibliotecas`, `c
 y `proyecto_bibliotecas.ps1`. Los scripts están en `generadores/digikey/`.
 
 **Pendiente:**
-- «Update PCB» para llevar los parámetros a la placa (ver la nota sobre las clases de red).
 - Regenerar el BOM de `fabricacion/` (todavía tiene los MPN anteriores y LCSC).
 - Pasar el documento de diseño a DigiKey (la v5 cotiza en Mouser).
+
+## Cambios de placa (02/11/2026)
+
+- **Update PCB:** los parámetros de DigiKey ya están en la placa.
+  - El ECO vuelve a proponer «Remove Net Classes» (Potencia y Alimentacion). Si se ejecuta,
+    `generadores/digikey/Placa.pas` (`ClasesDeRed`) las repone en 2 s.
+- **GND en la capa 3 (Senal-Potencia):** antes estaba vacía. Ahora las pistas de Bottom tienen referencia a 0,21 mm
+  y no a 1,27 mm.
+- **Perforaciones H3 y H4 (M3) en (3,3 ; 38,6) y (66,7 ; 38,6) mm desde el origen:**
+  - Quedan a 35 mm sobre H1/H2 y bajan el voladizo del borde de los FOC de 46 a ~11 mm.
+  - Se quitaron 5 vías de costura bajo los separadores.
+  - **Hay que coordinar estas coordenadas con la motherboard.**
+- **C3 (10 µF):** pasa a estar entre VIN (pin 3) y GND (pin 4) del AP63205, con el lazo de entrada mínimo. C1 y C2
+  quedan como capacidad de entrada.
+- **LDO de sensores (U3, FB1, C10, C11) entre la IMU y el GNSS:**
+  - V3V3_SENS bajó de 113 mm a ~48 mm y el GNSS queda a 3 mm del LDO.
+  - La rama de la IMU sigue por el borde superior: el abanico SPI del MCU bloquea el camino directo en las 3 capas.
+  - GND de C10/U3 con vías propias al plano. Los designadores del grupo quedan ocultos.
+- **Sin cambios:** la IMU y R10–R15. Con H3/H4 la IMU ya no está en voladizo, y el bus FOC es lento.
+- **Verificación:** DRC completo en 0 (incluye no ruteadas, antenas, slivers y serigrafía); el ECO solo muestra
+  las clases de red.
+- **Situs:** no usar «Connections on selected components» sin bloquear antes las rutas existentes. Corre sus pasadas
+  sobre toda la placa: borró vías de otras redes y agregó vías de fanout pegadas a pads. Las rutas del LDO se
+  agregaron a mano (`RutasLDO`).
 
 ## Decisiones para revisar en grupo
 
@@ -95,7 +118,7 @@ El documento de diseño no define estos puntos:
 
 ![PCB](esquematicos/05_PCB.png)
 
-- **Placa:** 70 x 50 mm, 4 capas (Top / GND plano / Señal-Potencia / Bottom), 2 agujeros M3. Apilado tipo JLC04161H-7628
+- **Placa:** 70 x 50 mm, 4 capas (Top / GND plano / Señal-Potencia / Bottom), 4 agujeros M3. Apilado tipo JLC04161H-7628
   (prepreg 0,21 mm, núcleo 1,065 mm, prepreg 0,21 mm; cobre 35 µm fuera, 15 µm dentro; ≈ 1,6 mm).
 - **Colocación:** `generadores/pcb/colocacion.py` define las 68 posiciones y verifica sin Altium que no haya choques de
   courtyard. La expansión J1 va en la cara inferior hacia la motherboard; el cristal junto a PF0/PF1; los desacoplos
