@@ -1,5 +1,15 @@
 # Tareas pendientes para la entrega (04/11/2026)
 
+## Para retomar en otra sesión u otro PC
+
+- **Rama:** `git checkout elo301-entrega`.
+- **Instrucción para Claude:** «lee ELO301_Modulo_Control_Secundario/TAREAS.md y el README, y sigue con el pendiente 1».
+- **Scripts de Altium:** van en `generadores/digikey/` (`correr.ps1 -Script Placa -Proc <proc>`). `RUTA_BASE` está fija
+  en `Placa.pas` y `Simbolos.pas`: hay que ajustarla a la carpeta del repo en el PC nuevo.
+- **Scripts de Python:** necesitan `pip install olefile shapely matplotlib`.
+- **Altium:** no cerrarlo a la fuerza, porque bloquea la licencia. Si un script queda detenido en el depurador, hay que
+  usar Run › Stop.
+
 Rama: `elo301-entrega`. Altium queda abierto (X2.EXE). No cerrarlo a la fuerza: bloquea la licencia.
 
 ## Hecho
