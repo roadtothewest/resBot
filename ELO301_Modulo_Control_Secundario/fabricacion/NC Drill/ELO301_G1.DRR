@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------------------------------------------------
-NCDrill File Report For: ELO301_G1.PcbDoc   11/1/2026  5:21:07 PM
+NCDrill File Report For: ELO301_G1.PcbDoc   04-11-2026  11:47:14
 ----------------------------------------------------------------------------------------------------------------------------------
 
 Layer Pair : Top Layer to Bottom Layer
@@ -7,11 +7,11 @@ ASCII RoundHoles File : ELO301_G1.TXT
 
 Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
 ----------------------------------------------------------------------------------------------------------------------------------
-T1      0.3mm (12mil)                                             Round             188       PTH        887.36mm (34.94inch)
+T1      0.3mm (12mil)                                             Round             185       PTH        766.61mm (30.18inch)
 T2      0.95mm (37mil)                                            Round             24        PTH        97.51mm (3.84inch)
-T3      1mm (39mil)                                               Round             19        PTH        62.72mm (2.47inch)
-T4      3.2mm (126mil)                                            Round             2         NPTH       62.80mm (2.47inch)
+T3      1mm (39mil)                                               Round             23        PTH        72.50mm (2.85inch)
+T4      3.2mm (126mil)                                            Round             4         NPTH       161.20mm (6.35inch)
 ----------------------------------------------------------------------------------------------------------------------------------
-Totals                                                                              233
+Totals                                                                              236
 
 Total Processing Time (hh:mm:ss) : 00:00:00

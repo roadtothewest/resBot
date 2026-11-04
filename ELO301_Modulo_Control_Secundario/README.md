@@ -12,24 +12,23 @@ con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 | ERC | **0 errores**, 3 advertencias esperadas* |
 | Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), también en la placa. Ver [metadatos DigiKey](#metadatos-digikey-02112026) |
 | PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, 70 componentes, ruteo completo, GND en las capas 2 y 3 y pours en Top y Bottom. **DRC: 0 violaciones**. Ver [cambios de placa](#cambios-de-placa-02112026) |
-| Salidas de fabricación | **Desactualizadas**: corresponden a la placa del 01/11. Hay que regenerarlas ([detalle](#salidas-de-fabricación-fabricacion)) |
+| Salidas de fabricación | Regeneradas el 04/11, con el UART J9, la serigrafía nueva y el BOM con DigiKey ([detalle](#salidas-de-fabricación-fabricacion)) |
 
 \* GNSS_PPS y UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU, y el nRESET del GNSS solo tiene su pull-up.
 
 | Hoja | Contenido |
 |---|---|
 | [01 Alimentación](esquematicos/01_Alimentacion.png) | 12 V con B240A en serie y TVS SMAJ15A, buck AP63205 a 5 V, LDO TLV75533 para MCU y para sensores (con ferrita), LED de encendido, divisor 100k/12k + 100 nF hacia PA1 |
-| [02 MCU](esquematicos/02_MCU.png) | STM32G431CBT6 con los 29 pines de la Tabla 9, desacoplos, VDDA con ferrita, cristal de 25 MHz (CL 10 pF, 2 × 12 pF), NRST y BOOT0 con pulsadores, LED heartbeat en PB6 |
+| [02 MCU](esquematicos/02_MCU.png) | STM32G431CBT6 con los 29 pines de la Tabla 9, desacoplos, VDDA con ferrita, cristal de 25 MHz (CL 10 pF, 2 × 12 pF), NRST y BOOT0 con pulsadores, LED heartbeat en PB9, UART de depuración (USART1) en PB6/PB7 |
 | [03 Sensores](esquematicos/03_Sensores.png) | IMU BMI270 por SPI1, GNSS ATGM336H por USART2 + PPS con antena activa por U.FL (alimentada desde VCC_RF por L2), conector JST del ToF por I2C2 con pull-ups de 4,7k |
-| [04 Conectores](esquematicos/04_Conectores.png) | Expansión 1x14 (Tabla 5), SWD 1x5, 4 JST XH 5P para los FOC con 33 Ω en serie, 4 agujeros M3 |
+| [04 Conectores](esquematicos/04_Conectores.png) | Expansión 1x14 (Tabla 5), SWD 1x5, UART de depuración 1x4 (J9), 4 JST XH 5P para los FOC con 33 Ω en serie, 4 agujeros M3 |
 
 ## Pendientes (02/11/2026)
 
 **Antes de fabricar**
 
-1. **Regenerar las salidas de fabricación:** Gerber, taladro y Pick & Place con `Fabricacion.OutJob`, y el BOM desde
-   `generadores/digikey/metadatos_digikey.tsv`. Las de `fabricacion/` son de la placa del 01/11.
-   - El paquete para JLCPCB lo arma `jlcpcb.py`, que necesita Python.
+1. ~~Regenerar las salidas de fabricación~~: hecho el 04/11, ver [salidas](#salidas-de-fabricación-fabricacion). Queda
+   decidir el C16 (sin stock en LCSC).
 2. ~~Coordinar H3/H4 con la motherboard~~: no hay un equipo de motherboard aparte.
 3. Revisar los puntos de [«Para revisar antes de mandar a fabricar»](#para-revisar-antes-de-mandar-a-fabricar): Gerber
    Viewer de JLCPCB, rotaciones del CPL y PDF del esquemático.
@@ -113,7 +112,9 @@ Para regenerar todo, con Altium abierto: `correr.ps1 -Proc CrearBibliotecas`, `c
 y `proyecto_bibliotecas.ps1`. Los scripts están en `generadores/digikey/`.
 
 **Pendiente:**
-- Regenerar el BOM de `fabricacion/` (todavía tiene los MPN anteriores y LCSC).
+- ~~Regenerar el BOM de `fabricacion/`~~: hecho el 04/11.
+  - Se agregaron los LCSC de los 3 capacitores reemplazados: C85864, C85862 y C6565408.
+  - Se agregó una fila para J9.
 - Pasar el documento de diseño a DigiKey (la v5 cotiza en Mouser).
 
 ## Cambios de placa (02/11/2026)
@@ -174,10 +175,16 @@ La lista de lo que falta para la entrega está en [TAREAS.md](TAREAS.md).
   - DRC completo en 0.
   - Sin choques de courtyard.
   - Serigrafía medida sobre el archivo con `generadores/serigrafia/verificar_seda.py`.
-- **Pendiente:**
-  - La regla *Silk To Solder Mask* sigue en 0,1 mm, que equivale a 0,15 mm al cobre. Conviene subirla a 0,15 mm a mano
-    en *Design » Rules*: la API de scripts no expone ese valor.
-  - Las salidas de `fabricacion/` todavía no incluyen estos cambios.
+- **Regla *Silk To Solder Mask*:** pasó de 0,1 a 0,15 mm. Con la máscara de 0,05 mm, el DRC exige ahora 0,2 mm entre la
+  serigrafía y el cobre.
+- **Vías del PR #2 tapadas:** las 3 vías nuevas junto al MCU (UART TX, RX y LED) venían sin máscara encima. Ahora están
+  tapadas como las otras 182 (`Placa.pas`, `TaparVias`).
+- **Esquemático:**
+  - `ActualizarEsquematico` volvió a escribir los metadatos.
+  - Volvieron los parámetros «Description» que el PR #2 había quitado en la hoja 02.
+  - La descripción del J9 dice «1x4».
+  - Se cargaron los LCSC de los capacitores reemplazados.
+  - Las conexiones quedaron idénticas, comparadas hoja por hoja.
 
 ## Decisiones para revisar en grupo
 
@@ -224,18 +231,31 @@ El documento de diseño no define estos puntos:
 
 ### Salidas de fabricación (`fabricacion/`)
 
-Generadas con `altium/Fabricacion.OutJob` (contenedor «Fabrication Files») desde la placa con DRC 0 y armadas con
-`generadores/herramientas/jlcpcb.py`:
+Regeneradas el 04/11/2026 con `altium/Fabricacion.OutJob` (contenedor «Fabrication Files»). Incluyen el UART J9 y la
+serigrafía nueva, y salen de la placa con DRC 0. Las armó `generadores/herramientas/jlcpcb.py`:
 
 - **`ELO301_G1_Gerber_JLCPCB.zip`, lo que se sube a JLCPCB:** 11 Gerber y el taladro. El plano GND va en positivo como
   `.G2L` (capa 2), Señal-Potencia como `.G3L` (capa 3) y el contorno como `.GKO`, los nombres que JLCPCB documenta para 4 capas.
-- **`BOM_ELO301_G1.csv`:** 34 líneas y 66 piezas (sin los agujeros M3), agrupadas por número de parte, con fabricante,
-  MPN y código LCSC. Cada código se verificó contra la API de piezas de JLCPCB el 01/11/2026: mismo MPN y stock
-  suficiente. 33 líneas son piezas «Extended» (JLCPCB cobra un cargo fijo por cada tipo); la única «Basic» es C22/C23.
-- **`CPL_ELO301_G1_JLCPCB.csv`:** posición (mm) y rotación de las 66 piezas.
+- **`BOM_ELO301_G1.csv`:** lo genera `generadores/digikey/bom_digikey.py` directamente desde los esquemáticos y la placa.
+  - 35 líneas y 67 piezas, sin los agujeros M3, agrupadas por número de parte, valor y huella.
+  - Columnas: fabricante, MPN, código DigiKey y código LCSC. Lleva además las columnas que pide JLCPCB para armar
+    (Comment, Designator, Footprint, LCSC Part #).
+  - **Sin código DigiKey:** la tira BOOMELE (J1, J2, J9) y el GNSS ATGM336H, excepciones documentadas en la columna Nota.
+  - **Verificación del 04/11/2026:** los 35 códigos LCSC se revisaron contra la API de piezas de JLCPCB. Todos coinciden
+    con su MPN y tienen stock, menos el **C16 (GRM188R61C475ME11J, C6565408): sin stock**. El equivalente con stock es
+    Samsung CL10A475KO8NNNC (C19666, pieza «Basic»), anotado en la columna Nota. Hay que decidir si se reemplaza para
+    el armado en JLCPCB.
+  - La única pieza «Basic» del BOM actual es C22/C23. Las demás son «Extended»: JLCPCB cobra un cargo fijo por cada tipo.
+- **`CPL_ELO301_G1_JLCPCB.csv`:** posición (mm) y rotación de las 67 piezas.
 - **`Gerber/`, `NC Drill/` y `Pick Place/`:** salida directa del OutJob, para otros fabricantes (ahí el plano `.GP1` es negativo).
-- **Taladro:** 188 × 0,3 mm (vías), 24 × 0,95 mm y 19 × 1,0 mm metalizados, y 2 × 3,2 mm sin metalizar (M3), en un solo
-  archivo con `;TYPE=PLATED` / `;TYPE=NON_PLATED`.
+- **Taladro:** en un solo archivo con `;TYPE=PLATED` / `;TYPE=NON_PLATED`.
+  - Metalizados: 185 × 0,3 mm (vías), 24 × 0,95 mm y 23 × 1,0 mm.
+  - Sin metalizar: 4 × 3,2 mm (M3).
+- **Revisión de los Gerber:**
+  - Serigrafía solo de 0,18 y 0,2 mm.
+  - Las 185 vías tapadas en ambas caras. Las 3 que agregó el PR #2 junto al MCU venían destapadas; se taparon.
+  - Los 236 agujeros con su antipad o alivio en el plano.
+  - Contorno de 70 × 50 mm en (0,0).
 
 Al pedir: 4 capas, 1,6 mm, apilado JLC04161H-7628, cobre exterior de 1 oz. El orden queda L1 `.GTL` · L2 `.G2L` (GND) ·
 L3 `.G3L` · L4 `.GBL`.

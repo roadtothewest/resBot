@@ -23,6 +23,15 @@ Rama: `elo301-entrega`. Altium queda abierto (X2.EXE). No cerrarlo a la fuerza: 
     cerca de otra pieza del mismo tipo, más H1–H4, a propósito.
   - Las huellas de las tres bibliotecas quedaron igual que en la placa.
 - **DRC: 0 violaciones.** Sin choques de courtyard.
+- **Salidas de `fabricacion/` regeneradas (04/11):**
+  - Gerber, taladro, Pick & Place, zip para JLCPCB y CPL con las 67 piezas.
+  - BOM con DigiKey (`generadores/digikey/bom_digikey.py`), con los LCSC verificados contra JLCPCB.
+  - La regla Silk To Solder Mask quedó en 0,15 mm.
+  - Se taparon las 3 vías del PR #2.
+  - En el esquemático volvieron los «Description» de la hoja 02 y se corrigió la descripción del J9.
+- **Decidir C16** (4,7 µF, GRM188R61C475ME11J): no tiene stock en LCSC/JLCPCB. El equivalente con stock es Samsung
+  CL10A475KO8NNNC (C19666, «Basic»). Si se arma en JLCPCB, hay que cambiarlo en `metadatos_digikey.tsv` y en el
+  esquemático.
 
 ## Pendiente, en orden
 
@@ -39,29 +48,16 @@ Rama: `elo301-entrega`. Altium queda abierto (X2.EXE). No cerrarlo a la fuerza: 
      - Comparar la netlist aplanada con la actual: debe quedar idéntica.
    - Al cambiar la jerarquía cambian los Unique ID de todos los componentes. Antes del Update PCB hay que re-enlazarlos
      con la placa, con *Project » Component Links* o con un script que ajuste `SourceUniqueId`.
-2. **Regenerar `fabricacion/`.** Hoy sigue siendo la del 01/11, sin UART ni la serigrafía nueva.
-   - Gerber, taladro y Pick & Place con `Fabricacion.OutJob`.
-   - Zip para JLCPCB con `jlcpcb.py`. Reemplaza el zip de la raíz y el de `fabricacion/`.
-   - **BOM con DigiKey:** MPN y código DigiKey de `generadores/digikey/metadatos_digikey.tsv`, LCSC como segundo
-     proveedor, y J9. El BOM de hoy es de LCSC y tiene 3 MPN obsoletos.
-   - Volver a revisar los Gerber: taladro contra pads, plano GND y serigrafía.
-3. **Regenerar `esquematicos/`.**
+2. **Regenerar `esquematicos/`.**
    - PDF del esquemático completo, hoja superior incluida.
    - PNG por hoja y de la placa.
-4. **Detalles del PR #2:**
-   - La descripción del J9 dice «cortada a 1x5».
-   - El nombre del símbolo `BOOMELE_HDR_1X04_J7` no sigue el formato `BOOMELE 2.54-1x04`.
-   - En la hoja 02_MCU, 19 componentes perdieron el parámetro «Description». Volver a correr
-     `correr.ps1 -Proc ActualizarEsquematico`.
-5. **Regla Silk To Solder Mask:** subirla a mano de 0,1 a 0,15 mm en *Design » Rules*.
-   - Así el DRC exige los 0,2 mm al cobre que ya cumple la placa.
-   - La API de scripts no expone el valor de esta regla.
-6. **ActiveBOM** (`.BomDoc`) con DigiKey como proveedor favorito, como en el proyecto del profesor.
-7. **Huellas con el IPC Compliant Footprint Wizard** (método del ramo).
+3. **Detalle del PR #2:** el símbolo `BOOMELE_HDR_1X04_J7` no sigue el formato de nombre `BOOMELE 2.54-1x04`.
+4. **ActiveBOM** (`.BomDoc`) con DigiKey como proveedor favorito, como en el proyecto del profesor.
+5. **Huellas con el IPC Compliant Footprint Wizard** (método del ramo).
    - Hoy son las convertidas desde KiCad.
    - J1, J2 y J9 deberían usar la huella de pin header del profesor.
    - Si cambian los pads, hay que re-verificar el ruteo y el DRC.
-8. **Documento de diseño v6, solo a nivel de sistema.** Se parte de `Documento_de_Diseno_ELO301_Grupo1_v5.docx`
+6. **Documento de diseño v6, solo a nivel de sistema.** Se parte de `Documento_de_Diseno_ELO301_Grupo1_v5.docx`
    (Descargas) y se exporta a PDF en `docs/`. Cambios:
    - BOM y costos con DigiKey (Tablas 3, 7 y 8).
    - Capacitores reemplazados.
@@ -72,6 +68,6 @@ Rama: `elo301-entrega`. Altium queda abierto (X2.EXE). No cerrarlo a la fuerza: 
    - UART de depuración (Tabla 9: PB6/PB7, LED en PB9).
    - Diagrama de módulos.
    - Fila de revisión v6.
-9. **README.**
+7. **README.**
    - Actualizar estado, hojas, salidas y pendientes cuando se regeneren las salidas.
    - Retirar o actualizar `ELO301_G1_Altium_por_etapas.zip`.

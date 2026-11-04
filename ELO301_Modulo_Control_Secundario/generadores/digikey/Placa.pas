@@ -5,7 +5,10 @@
     - MoverJ9 y RutaVin12J9: J9 fuera de la zona del tornillo de H1, y VIN_12V por fuera del J9.
     - Serigrafia sobre los minimos de JLCPCB (scripts de Python en generadores/serigrafia):
       seda_plan.py -> SerigrafiaPlaca; DesignadoresTamano -> designadores.py -> DesignadoresUbicar;
-      VolcarHuellas -> huellas_plan.py -> AplicarHuellas -> BorrarSedaHuellas para las bibliotecas. }
+      VolcarHuellas -> huellas_plan.py -> AplicarHuellas -> BorrarSedaHuellas para las bibliotecas.
+    - Fabricacion: TaparVias (vias sin mascara y regla Silk To Solder Mask a 0,15 mm) -> DRC -> Fabricar (OutJob) ->
+      generadores/herramientas/jlcpcb.py y generadores/digikey/bom_digikey.py. CerrarHojas antes de reescribir el
+      esquematico despues de un git pull. }
 
 Const
   RUTA_BASE = 'C:\Users\Estudiante USM\Desktop\resBot\ELO301_Modulo_Control_Secundario\';
@@ -838,6 +841,112 @@ Begin
     If Copy(C.DM_PhysicalDesignator, 1, 1) = 'H' Then S := S + C.DM_PhysicalDesignator + ' ';
   End;
   Log('  compilado: ' + IntToStr(Fl.DM_ComponentCount) + ' componentes; H: ' + S);
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ Tapa con mascara las vias que no lo estan (las 3 del UART y el LED del PR #2, junto a los pines del MCU), como el resto
+  (mismo metodo que generadores/pcb/costura.py), y sube la regla Silk To Solder Mask a 0,15 mm: con la mascara de
+  0,05 mm el DRC exige 0,2 mm entre serigrafia y cobre, lo que ya cumple la placa. }
+Procedure TaparVias;
+Var
+  Doc, Board, It, V, Cache, R : Variant;
+  N : Integer;
+Begin
+  Bitacora := TStringList.Create;
+  Log('TaparVias ' + DateTimeToStr(Now));
+  Doc := AbrirPlaca;
+  Board := PCBServer.GetCurrentPCBBoard;
+  N := 0;
+  PCBServer.PreProcess;
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(eViaObject));
+  It.AddFilter_LayerSet(AllLayers);
+  It.AddFilter_Method(eProcessAll);
+  V := It.FirstPCBObject;
+  While V <> Nil Do
+  Begin
+    If Not (V.GetState_IsTenting_Top And V.GetState_IsTenting_Bottom) Then
+    Begin
+      V.BeginModify;
+      Cache := V.GetState_Cache;
+      Cache.SolderMaskExpansionValid := eCacheManual;
+      V.SetState_Cache := Cache;
+      V.SetState_IsTenting_Top(True);
+      V.SetState_IsTenting_Bottom(True);
+      V.EndModify;
+      Inc(N);
+      Log('  tapada ' + NombreRed(V) + ' en ' + MM(V.x - Board.XOrigin) + ' ; ' + MM(V.y - Board.YOrigin));
+    End;
+    V := It.NextPCBObject;
+  End;
+  Board.BoardIterator_Destroy(It);
+  Log('  vias tapadas: ' + IntToStr(N));
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(eRuleObject));
+  It.AddFilter_LayerSet(AllLayers);
+  It.AddFilter_Method(eProcessAll);
+  R := It.FirstPCBObject;
+  While R <> Nil Do
+  Begin
+    If R.Name = 'SilkToSolderMaskClearance' Then
+    Begin
+      R.SetState_SilkToMaskGap(MMsToCoord(0.15));
+      Log('  regla ' + R.Name + ' a 0,15 mm');
+    End;
+    R := It.NextPCBObject;
+  End;
+  Board.BoardIterator_Destroy(It);
+  PCBServer.PostProcess;
+  GuardarPlaca(Doc);
+  Log('  guardada');
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ Cierra las hojas del esquematico si estan abiertas sin cambios, para que la proxima apertura las lea del disco
+  (por ejemplo despues de un git pull); si alguna tiene cambios sin guardar, no la toca }
+Procedure CerrarHojas;
+Var
+  Doc : Variant;
+  I : Integer;
+  Ruta : String;
+Begin
+  Bitacora := TStringList.Create;
+  Log('CerrarHojas ' + DateTimeToStr(Now));
+  For I := 1 To 4 Do
+  Begin
+    Case I Of
+      1 : Ruta := RUTA_BASE + 'altium\01_Alimentacion.SchDoc';
+      2 : Ruta := RUTA_BASE + 'altium\02_MCU.SchDoc';
+      3 : Ruta := RUTA_BASE + 'altium\03_Sensores.SchDoc';
+      4 : Ruta := RUTA_BASE + 'altium\04_Conectores.SchDoc';
+    End;
+    Doc := Client.GetDocumentByPath(Ruta);
+    If Doc = Nil Then Log('  no abierta: ' + Ruta)
+    Else If Doc.Modified Then Log('  CON CAMBIOS SIN GUARDAR, no se cierra: ' + Ruta)
+    Else Begin Client.CloseDocument(Doc); Log('  cerrada: ' + Ruta); End;
+  End;
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ Corre Fabricacion.OutJob (contenedor Fabrication Files): Gerber, taladro, Pick and Place y BOM en altium\Fabricacion }
+Procedure Fabricar;
+Var
+  Doc : Variant;
+Begin
+  Bitacora := TStringList.Create;
+  Log('Fabricar ' + DateTimeToStr(Now));
+  AbrirPlaca;
+  Doc := Client.OpenDocument('OUTPUTJOB', RUTA_BASE + 'altium\Fabricacion.OutJob');
+  Client.ShowDocument(Doc);
+  Log('  OutJob abierto: ' + BoolToStr(Doc <> Nil, True));
+  ResetParameters;
+  AddStringParameter('Action', 'Run');
+  AddStringParameter('ObjectKind', 'OutputBatch');
+  RunProcess('WorkspaceManager:GenerateReport');
+  Log('  salidas generadas');
   Terminar;
   Bitacora.Free;
 End;
