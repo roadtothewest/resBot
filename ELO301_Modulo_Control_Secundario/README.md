@@ -30,8 +30,7 @@ con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 1. **Regenerar las salidas de fabricación:** Gerber, taladro y Pick & Place con `Fabricacion.OutJob`, y el BOM desde
    `generadores/digikey/metadatos_digikey.tsv`. Las de `fabricacion/` son de la placa del 01/11.
    - El paquete para JLCPCB lo arma `jlcpcb.py`, que necesita Python.
-2. **Coordinar H3/H4 con la motherboard:** M3 en (3,3 ; 38,6) y (66,7 ; 38,6) mm desde el origen de la placa (esquina
-   inferior izquierda). Los separadores de la motherboard deben coincidir.
+2. ~~Coordinar H3/H4 con la motherboard~~: no hay un equipo de motherboard aparte.
 3. Revisar los puntos de [«Para revisar antes de mandar a fabricar»](#para-revisar-antes-de-mandar-a-fabricar): Gerber
    Viewer de JLCPCB, rotaciones del CPL y PDF del esquemático.
 
@@ -65,8 +64,7 @@ con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
 
 **Diseño**
 
-10. **Interfaz de servicio:** el registro de especificaciones pide USB o UART/serial, y el diseño solo tiene
-    diagnóstico por SPI. Una opción es USART1 en PB6/PB7, moviendo el LED a un pin libre (verificar en CubeMX).
+10. ~~Interfaz de servicio~~: resuelta con el UART de depuración J9 (ver [cambios del 04/11](#cambios-de-placa-04112026)).
 11. **Clases de red:** el ECO siempre propone quitar `Potencia` y `Alimentacion` porque solo existen en la placa.
     Definirlas en el esquemático (directivas de clase) o reponerlas con `Placa.pas` (`ClasesDeRed`) tras cada
     Update PCB.
@@ -128,7 +126,6 @@ y `proyecto_bibliotecas.ps1`. Los scripts están en `generadores/digikey/`.
 - **Perforaciones H3 y H4 (M3) en (3,3 ; 38,6) y (66,7 ; 38,6) mm desde el origen:**
   - Quedan a 35 mm sobre H1/H2 y bajan el voladizo del borde de los FOC de 46 a ~11 mm.
   - Se quitaron 5 vías de costura bajo los separadores.
-  - **Hay que coordinar estas coordenadas con la motherboard.**
 - **C3 (10 µF):** pasa a estar entre VIN (pin 3) y GND (pin 4) del AP63205, con el lazo de entrada mínimo. C1 y C2
   quedan como capacidad de entrada.
 - **LDO de sensores (U3, FB1, C10, C11) entre la IMU y el GNSS:**
@@ -141,6 +138,46 @@ y `proyecto_bibliotecas.ps1`. Los scripts están en `generadores/digikey/`.
 - **Situs:** no usar «Connections on selected components» sin bloquear antes las rutas existentes. Corre sus pasadas
   sobre toda la placa: borró vías de otras redes y agregó vías de fanout pegadas a pads. Las rutas del LDO se
   agregaron a mano (`RutasLDO`).
+
+## Cambios de placa (04/11/2026)
+
+La lista de lo que falta para la entrega está en [TAREAS.md](TAREAS.md).
+
+- **UART de depuración (PR #2):**
+  - USART1 con TX en PB6 y RX en PB7. El LED de heartbeat pasa a PB9.
+  - Header J9 1x4 BOOMELE: 1 V3V3_MCU (referencia, no alimenta), 2 TX del MCU, 3 RX del MCU, 4 GND.
+  - La programación sigue por SWD: J2, o J1 desde la Radxa.
+- **J9 corrido 1,45 mm a la derecha:** su courtyard se metía 1,33 mm en la zona del tornillo de H1 (radio de 3,45 mm).
+  - El DRC no lo veía porque no revisa courtyards.
+  - Se ajustaron sus pistas en Bottom.
+  - La pista de VIN_12V en Top (D1 → J1-1) ahora pasa por fuera del J9: horizontal, 45° y bajada vertical a J1-1.
+- **Serigrafía por encima de los mínimos de JLCPCB:**
+
+  | | Antes | Ahora | Mínimo JLCPCB |
+  |---|---|---|---|
+  | Ancho de línea | 0,10–0,12 mm | 0,18 mm | 0,15 mm |
+  | Alto de texto | 0,8 mm (1,0 mm el de la cara inferior) | 1,2 mm, trazo de 0,2 mm (1:6) | 1,0 mm |
+  | Serigrafía a cobre de pad | 0,15 mm | 0,2 mm o más | 0,15 mm |
+
+  - **Recorte de las líneas:** se recortaron donde quedaban a menos de 0,2 mm del cobre, con la forma real de cada pad
+    (rectángulo redondeado). Se mantienen las marcas de pin 1 y de polaridad.
+  - **Bibliotecas:** las de `ELO301_G1.PcbLib` y las dos del profesor (`C0603 - MURATA`, `R0603 - YAGEO`) quedaron igual
+    que en la placa, para que un *Update From PCB Libraries* no revierta el cambio.
+  - **Designadores:**
+    - Reubicados con `generadores/serigrafia/designadores.py`: a 0,25 mm o más de los pads, a 0,26 mm o más de otra
+      serigrafía, fuera de los cuerpos y de la zona de los tornillos.
+    - Cada uno queda más cerca de su pieza que de otra del mismo tipo.
+    - Quedan 61 visibles.
+    - Ocultos: C6, C12, C19, C25, J4 y R13, que no caben (J4 tiene 1,3 mm libres y el texto ocupa 1,6 mm), y H1–H4.
+  - **Identificación de la cara inferior:** «ELO301 G1 v1.2 2026-11».
+- **Verificación:**
+  - DRC completo en 0.
+  - Sin choques de courtyard.
+  - Serigrafía medida sobre el archivo con `generadores/serigrafia/verificar_seda.py`.
+- **Pendiente:**
+  - La regla *Silk To Solder Mask* sigue en 0,1 mm, que equivale a 0,15 mm al cobre. Conviene subirla a 0,15 mm a mano
+    en *Design » Rules*: la API de scripts no expone ese valor.
+  - Las salidas de `fabricacion/` todavía no incluyen estos cambios.
 
 ## Decisiones para revisar en grupo
 
@@ -182,8 +219,8 @@ El documento de diseño no define estos puntos:
   RF_IN 5,0 mm a 0,35 mm (≈ 48 Ω, ver la auditoría) con un stub de 0,4 mm hacia L2. L1 se giró 180° para que su pad SW
   mire a U1/C4, y L2 (47 nH, VCC_RF) quedó pegada a la línea de RF.
 - **Pads THT** con pila explícita (arriba / medio / abajo): en modo simple el DRC no ve el cobre de las capas internas.
-- **Designadores:** 60 visibles y el resto ocultos porque no caben sin chocar con serigrafía o pads. La serigrafía
-  inferior lleva la identificación «ELO301 G1 v1.1 2026-11».
+- **Designadores:** 61 visibles de 1,2 mm; el resto, ocultos porque no caben sin chocar con serigrafía o pads. La
+  serigrafía inferior lleva la identificación «ELO301 G1 v1.2 2026-11» (ver [cambios del 04/11](#cambios-de-placa-04112026)).
 
 ### Salidas de fabricación (`fabricacion/`)
 

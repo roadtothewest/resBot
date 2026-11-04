@@ -1,7 +1,11 @@
 { Cambios de la placa ELO301_G1 desde Altium. Se ejecuta con correr.ps1 -Script Placa -Proc <procedimiento>.
     - ImportarCambios: Design > Import Changes (ECO) desde el proyecto; el dialogo ECO queda abierto.
     - ClasesDeRed: repone las clases Potencia y Alimentacion que usan las reglas Ancho_*.
-    - PourCapa3: polígono de GND en Senal-Potencia con el mismo contorno que los de Top y Bottom. }
+    - PourCapa3: polígono de GND en Senal-Potencia con el mismo contorno que los de Top y Bottom.
+    - MoverJ9 y RutaVin12J9: J9 fuera de la zona del tornillo de H1, y VIN_12V por fuera del J9.
+    - Serigrafia sobre los minimos de JLCPCB (scripts de Python en generadores/serigrafia):
+      seda_plan.py -> SerigrafiaPlaca; DesignadoresTamano -> designadores.py -> DesignadoresUbicar;
+      VolcarHuellas -> huellas_plan.py -> AplicarHuellas -> BorrarSedaHuellas para las bibliotecas. }
 
 Const
   RUTA_BASE = 'C:\Users\Estudiante USM\Desktop\resBot\ELO301_Modulo_Control_Secundario\';
@@ -866,6 +870,728 @@ Begin
   End;
   Board.BoardIterator_Destroy(It);
   Log('  violaciones: ' + IntToStr(N));
+  Terminar;
+  Bitacora.Free;
+End;
+
+Procedure PistaCapa(Board, Red : Variant; Xa, Ya, Xb, Yb, W : Double; Capa : Integer);
+Var
+  T : Variant;
+Begin
+  T := PCBServer.PCBObjectFactory(eTrackObject, eNoDimension, eCreate_Default);
+  T.x1 := Board.XOrigin + MMsToCoord(Xa); T.y1 := Board.YOrigin + MMsToCoord(Ya);
+  T.x2 := Board.XOrigin + MMsToCoord(Xb); T.y2 := Board.YOrigin + MMsToCoord(Yb);
+  T.Width := MMsToCoord(W);
+  T.Layer := Capa;
+  T.Net := Red;
+  Board.AddPCBObject(T);
+End;
+
+{ Extremo (Xv, Yv) de una pista llevado a (Xn, Yn) }
+Procedure MoverExtremo(Board, T : Variant; Xv, Yv, Xn, Yn : Double);
+Begin
+  T.BeginModify;
+  If Cerca(CoordToMMs(T.x1 - Board.XOrigin), Xv) And Cerca(CoordToMMs(T.y1 - Board.YOrigin), Yv) Then
+  Begin T.x1 := Board.XOrigin + MMsToCoord(Xn); T.y1 := Board.YOrigin + MMsToCoord(Yn); End
+  Else
+  Begin T.x2 := Board.XOrigin + MMsToCoord(Xn); T.y2 := Board.YOrigin + MMsToCoord(Yn); End;
+  T.EndModify;
+End;
+
+Function TieneExtremo(Board, T : Variant; X, Y : Double) : Boolean;
+Begin
+  Result := (Cerca(CoordToMMs(T.x1 - Board.XOrigin), X) And Cerca(CoordToMMs(T.y1 - Board.YOrigin), Y)) Or
+            (Cerca(CoordToMMs(T.x2 - Board.XOrigin), X) And Cerca(CoordToMMs(T.y2 - Board.YOrigin), Y));
+End;
+
+{ J9 (UART de depuracion) 1,45 mm a la derecha: su courtyard quedaba 1,33 mm dentro de la zona del tornillo de H1
+  (radio 3,45 mm). Las pistas de Bottom que llegan a sus pads se ajustan a la nueva posicion. }
+Procedure MoverJ9;
+Var
+  Doc, Board, It, T, V33, Rx : Variant;
+  Borrar : Array[0..9] Of Variant;
+  NB, I, NV, NT, NR : Integer;
+  Red : String;
+Begin
+  Bitacora := TStringList.Create;
+  Log('MoverJ9 ' + DateTimeToStr(Now));
+  Doc := AbrirPlaca;
+  Board := PCBServer.GetCurrentPCBBoard;
+  V33 := BuscarRed(Board, 'V3V3_MCU'); Rx := BuscarRed(Board, 'UART_DBG_RX');
+  NB := 0; NV := 0; NT := 0; NR := 0;
+  PCBServer.PreProcess;
+  Mover(Board, 'J9', 8.943, 3.556, 90);
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(eTrackObject));
+  It.AddFilter_LayerSet(MkSet(eBottomLayer));
+  It.AddFilter_Method(eProcessAll);
+  T := It.FirstPCBObject;
+  While T <> Nil Do
+  Begin
+    If T.Net <> Nil Then
+    Begin
+      Red := T.Net.Name;
+      If (Red = 'V3V3_MCU') And TieneExtremo(Board, T, 7.493, 3.556) And TieneExtremo(Board, T, 7.493, 21.031) Then
+      Begin MoverExtremo(Board, T, 7.493, 3.556, 7.493, 5.006); Inc(NV); End;
+      If (Red = 'UART_DBG_TX') And TieneExtremo(Board, T, 10.033, 3.556) Then
+      Begin MoverExtremo(Board, T, 10.033, 3.556, 11.483, 3.556); Inc(NT); End;
+      If (Red = 'UART_DBG_RX') And (TieneExtremo(Board, T, 12.573, 3.556) Or (TieneExtremo(Board, T, 12.739, 3.722) And TieneExtremo(Board, T, 13.723, 3.722))) Then
+      Begin Borrar[NB] := T; Inc(NB); End;
+      If (Red = 'UART_DBG_RX') And TieneExtremo(Board, T, 13.723, 3.722) And TieneExtremo(Board, T, 14.657, 4.656) Then
+      Begin MoverExtremo(Board, T, 13.723, 3.722, 14.023, 4.022); Inc(NR); End;
+    End;
+    T := It.NextPCBObject;
+  End;
+  Board.BoardIterator_Destroy(It);
+  For I := 0 To NB - 1 Do Board.RemovePCBObject(Borrar[I]);
+  PistaCapa(Board, V33, 8.943, 3.556, 7.493, 5.006, 0.3, eBottomLayer);
+  PistaCapa(Board, Rx, 14.023, 3.556, 14.023, 4.022, 0.2, eBottomLayer);
+  Log('  V3V3_MCU ajustada: ' + IntToStr(NV) + '; TX: ' + IntToStr(NT) + '; RX borradas: ' + IntToStr(NB) + ', ajustada: ' + IntToStr(NR));
+  PCBServer.PostProcess;
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(ePolyObject));
+  It.AddFilter_LayerSet(AllLayers);
+  It.AddFilter_Method(eProcessAll);
+  T := It.FirstPCBObject;
+  While T <> Nil Do Begin T.Rebuild; T := It.NextPCBObject; End;
+  Board.BoardIterator_Destroy(It);
+  Log('  repour');
+  GuardarPlaca(Doc);
+  Log('  guardada');
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ La diagonal de VIN_12V en Top (D1-2 -> J1-1) pasaba sobre el nuevo lugar de J9-4: se rehace por fuera del J9,
+  horizontal hasta x = 17,5, 45 grados y bajada vertical a J1-1. }
+Procedure RutaVin12J9;
+Var
+  Doc, Board, It, T, Red, Viejo : Variant;
+  W : Double;
+Begin
+  Bitacora := TStringList.Create;
+  Log('RutaVin12J9 ' + DateTimeToStr(Now));
+  Doc := AbrirPlaca;
+  Board := PCBServer.GetCurrentPCBBoard;
+  Viejo := Nil;
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(eTrackObject));
+  It.AddFilter_LayerSet(MkSet(eTopLayer));
+  It.AddFilter_Method(eProcessAll);
+  T := It.FirstPCBObject;
+  While T <> Nil Do
+  Begin
+    If (T.Net <> Nil) And TieneExtremo(Board, T, 14.681, 6.411) And TieneExtremo(Board, T, 18.491, 2.601) Then Viejo := T;
+    T := It.NextPCBObject;
+  End;
+  Board.BoardIterator_Destroy(It);
+  If Viejo = Nil Then Begin Log('  NO ENCONTRADA'); Terminar; Bitacora.Free; Exit; End;
+  Red := Viejo.Net; W := CoordToMMs(Viejo.Width);
+  Log('  red ' + Red.Name + ', ancho ' + FormatFloat('0.000', W));
+  PCBServer.PreProcess;
+  Board.RemovePCBObject(Viejo);
+  PistaCapa(Board, Red, 14.681, 6.411, 17.5, 6.411, W, eTopLayer);
+  PistaCapa(Board, Red, 17.5, 6.411, 18.491, 5.420, W, eTopLayer);
+  PistaCapa(Board, Red, 18.491, 5.420, 18.491, 2.601, W, eTopLayer);
+  PCBServer.PostProcess;
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(ePolyObject));
+  It.AddFilter_LayerSet(AllLayers);
+  It.AddFilter_Method(eProcessAll);
+  T := It.FirstPCBObject;
+  While T <> Nil Do Begin T.Rebuild; T := It.NextPCBObject; End;
+  Board.BoardIterator_Destroy(It);
+  Log('  rehecha y repour');
+  GuardarPlaca(Doc);
+  Log('  guardada');
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ ---------- Serigrafia sobre los minimos de JLCPCB (linea 0,15 mm, texto 1,0 mm, pad a serigrafia 0,15 mm) ----------
+  seda_plan.tsv (generado fuera de Altium) trae, por cada linea de serigrafia: capa, extremos originales y los tramos que
+  quedan al ensancharla a 0,18 mm y alejarla 0,2 mm del cobre de los pads. Unidades de 0,1 um (enteros). }
+Var
+  SPN : Integer;
+  SCapa, SX1, SY1, SX2, SY2, SN, SIni, SUsado : Array[0..599] Of Integer;
+  QX1, QY1, QX2, QY2 : Array[0..1199] Of Integer;
+
+Procedure CargarPlanSeda(Archivo : String);
+Var
+  L, F : TStringList;
+  I, J, Q : Integer;
+Begin
+  L := TStringList.Create;
+  L.LoadFromFile(RUTA_TMP + Archivo);
+  F := TStringList.Create;
+  F.Delimiter := #9;
+  SPN := 0; Q := 0;
+  For I := 0 To L.Count - 1 Do
+    If L[I] <> '' Then
+    Begin
+      F.DelimitedText := L[I];
+      SCapa[SPN] := StrToInt(F[0]);
+      SX1[SPN] := StrToInt(F[1]); SY1[SPN] := StrToInt(F[2]); SX2[SPN] := StrToInt(F[3]); SY2[SPN] := StrToInt(F[4]);
+      SN[SPN] := StrToInt(F[5]); SIni[SPN] := Q; SUsado[SPN] := 0;
+      For J := 0 To SN[SPN] - 1 Do
+      Begin
+        QX1[Q] := StrToInt(F[6 + 4 * J]); QY1[Q] := StrToInt(F[7 + 4 * J]);
+        QX2[Q] := StrToInt(F[8 + 4 * J]); QY2[Q] := StrToInt(F[9 + 4 * J]);
+        Inc(Q);
+      End;
+      Inc(SPN);
+    End;
+  L.Free; F.Free;
+  Log('  plan: ' + IntToStr(SPN) + ' lineas, ' + IntToStr(Q) + ' tramos');
+End;
+
+Function Igual(A, B : Integer) : Boolean;
+Begin
+  Result := Abs(A - B) <= 30;
+End;
+
+Function BuscarPlan(Capa, X1, Y1, X2, Y2 : Integer) : Integer;
+Var
+  K : Integer;
+Begin
+  Result := -1;
+  For K := 0 To SPN - 1 Do
+    If (SUsado[K] = 0) And (SCapa[K] = Capa) Then
+      If (Igual(SX1[K], X1) And Igual(SY1[K], Y1) And Igual(SX2[K], X2) And Igual(SY2[K], Y2)) Or
+         (Igual(SX1[K], X2) And Igual(SY1[K], Y2) And Igual(SX2[K], X1) And Igual(SY2[K], Y1)) Then
+      Begin
+        SUsado[K] := 1;
+        Result := K;
+        Break;
+      End;
+End;
+
+Function U2C(V : Integer) : Integer;
+Begin
+  Result := MMsToCoord(V / 10000);
+End;
+
+Function C2U(C : Integer) : Integer;
+Begin
+  Result := Round(CoordToMMs(C) * 10000);
+End;
+
+{ Aplica seda_plan.tsv a la placa: ancho 0,18 mm, recortes, tramos extra (dentro del mismo componente) y lineas eliminadas }
+Procedure SerigrafiaPlaca;
+Var
+  Doc, Board, It, T, N, Comp : Variant;
+  Lista : Array[0..599] Of Variant;
+  NL, I, J, K, Q, Capa, X0, Y0, NIntactas, NRecortadas, NNuevas, NBorradas, NSin : Integer;
+Begin
+  Bitacora := TStringList.Create;
+  Log('SerigrafiaPlaca ' + DateTimeToStr(Now));
+  CargarPlanSeda('seda_plan.tsv');
+  Doc := AbrirPlaca;
+  Board := PCBServer.GetCurrentPCBBoard;
+  X0 := Board.XOrigin; Y0 := Board.YOrigin;
+  NL := 0;
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(eTrackObject));
+  It.AddFilter_LayerSet(MkSet(eTopOverlay, eBottomOverlay));
+  It.AddFilter_Method(eProcessAll);
+  T := It.FirstPCBObject;
+  While T <> Nil Do Begin Lista[NL] := T; Inc(NL); T := It.NextPCBObject; End;
+  Board.BoardIterator_Destroy(It);
+  Log('  lineas de serigrafia en la placa: ' + IntToStr(NL));
+  NIntactas := 0; NRecortadas := 0; NNuevas := 0; NBorradas := 0; NSin := 0;
+  PCBServer.PreProcess;
+  For I := 0 To NL - 1 Do
+  Begin
+    T := Lista[I];
+    If T.Layer = eTopOverlay Then Capa := 33 Else Capa := 34;
+    K := BuscarPlan(Capa, C2U(T.x1 - X0), C2U(T.y1 - Y0), C2U(T.x2 - X0), C2U(T.y2 - Y0));
+    Comp := T.Component;
+    If K < 0 Then
+    Begin
+      Inc(NSin);
+      Log('  sin plan: ' + MM(T.x1 - X0) + ',' + MM(T.y1 - Y0) + ' ' + MM(T.x2 - X0) + ',' + MM(T.y2 - Y0));
+      T.BeginModify; T.Width := MMsToCoord(0.18); T.EndModify;
+    End
+    Else If SN[K] = 0 Then
+    Begin
+      If Comp <> Nil Then Begin Comp.BeginModify; Comp.RemovePCBObject(T); Comp.EndModify; End;
+      Board.RemovePCBObject(T);
+      Inc(NBorradas);
+    End
+    Else
+    Begin
+      Q := SIni[K];
+      If Igual(QX1[Q], SX1[K]) And Igual(QY1[Q], SY1[K]) And Igual(QX2[Q], SX2[K]) And Igual(QY2[Q], SY2[K]) And (SN[K] = 1) Then
+        Inc(NIntactas)
+      Else
+        Inc(NRecortadas);
+      T.BeginModify;
+      T.x1 := X0 + U2C(QX1[Q]); T.y1 := Y0 + U2C(QY1[Q]);
+      T.x2 := X0 + U2C(QX2[Q]); T.y2 := Y0 + U2C(QY2[Q]);
+      T.Width := MMsToCoord(0.18);
+      T.EndModify;
+      For J := 1 To SN[K] - 1 Do
+      Begin
+        Q := SIni[K] + J;
+        N := PCBServer.PCBObjectFactory(eTrackObject, eNoDimension, eCreate_Default);
+        N.x1 := X0 + U2C(QX1[Q]); N.y1 := Y0 + U2C(QY1[Q]);
+        N.x2 := X0 + U2C(QX2[Q]); N.y2 := Y0 + U2C(QY2[Q]);
+        N.Width := MMsToCoord(0.18);
+        N.Layer := T.Layer;
+        Board.AddPCBObject(N);
+        If Comp <> Nil Then Begin Comp.BeginModify; Comp.AddPCBObject(N); Comp.EndModify; End;
+        Inc(NNuevas);
+      End;
+    End;
+  End;
+  PCBServer.PostProcess;
+  Log('  intactas (solo ancho): ' + IntToStr(NIntactas) + '; recortadas: ' + IntToStr(NRecortadas) + '; tramos nuevos: ' +
+      IntToStr(NNuevas) + '; eliminadas: ' + IntToStr(NBorradas) + '; sin plan: ' + IntToStr(NSin));
+  GuardarPlaca(Doc);
+  Log('  guardada');
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ Designadores a 1,2 mm de alto con trazo de 0,2 mm (proporcion 1:6) y la identificacion de la cara inferior;
+  vuelca el rectangulo de cada designador para ubicarlos fuera de Altium (designadores.tsv) }
+Procedure DesignadoresTamano;
+Var
+  Doc, Board, It, C, T : Variant;
+  L : TStringList;
+  R : TCoordRect;
+  X0, Y0 : Integer;
+  Vis : String;
+Begin
+  Bitacora := TStringList.Create;
+  Log('DesignadoresTamano ' + DateTimeToStr(Now));
+  Doc := AbrirPlaca;
+  Board := PCBServer.GetCurrentPCBBoard;
+  X0 := Board.XOrigin; Y0 := Board.YOrigin;
+  L := TStringList.Create;
+  PCBServer.PreProcess;
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(eComponentObject));
+  It.AddFilter_LayerSet(AllLayers);
+  It.AddFilter_Method(eProcessAll);
+  C := It.FirstPCBObject;
+  While C <> Nil Do
+  Begin
+    C.Name.BeginModify;
+    C.Name.Size := MMsToCoord(1.2);
+    C.Name.Width := MMsToCoord(0.2);
+    C.Name.EndModify;
+    C.Name.GraphicallyInvalidate;
+    R := C.Name.BoundingRectangle;
+    If C.NameOn Then Vis := '1' Else Vis := '0';
+    L.Add(C.Name.Text + #9 + Layer2String(C.Layer) + #9 + Vis + #9 + FloatToStr(C.Name.Rotation) + #9 +
+          IntToStr(C2U(R.Left - X0)) + #9 + IntToStr(C2U(R.Bottom - Y0)) + #9 + IntToStr(C2U(R.Right - X0)) + #9 + IntToStr(C2U(R.Top - Y0)));
+    C := It.NextPCBObject;
+  End;
+  Board.BoardIterator_Destroy(It);
+  { identificacion en la serigrafia inferior }
+  It := Board.BoardIterator_Create;
+  It.AddFilter_ObjectSet(MkSet(eTextObject));
+  It.AddFilter_LayerSet(MkSet(eBottomOverlay));
+  It.AddFilter_Method(eProcessAll);
+  T := It.FirstPCBObject;
+  While T <> Nil Do
+  Begin
+    If Pos('ELO301', T.Text) = 1 Then
+    Begin
+      T.BeginModify;
+      T.Text := 'ELO301 G1 v1.2 2026-11';
+      T.Size := MMsToCoord(1.2);
+      T.Width := MMsToCoord(0.2);
+      T.EndModify;
+      T.GraphicallyInvalidate;
+      R := T.BoundingRectangle;
+      L.Add('ID' + #9 + 'BottomLayer' + #9 + '1' + #9 + FloatToStr(T.Rotation) + #9 +
+            IntToStr(C2U(R.Left - X0)) + #9 + IntToStr(C2U(R.Bottom - Y0)) + #9 + IntToStr(C2U(R.Right - X0)) + #9 + IntToStr(C2U(R.Top - Y0)));
+      Log('  identificacion: ' + T.Text);
+    End;
+    T := It.NextPCBObject;
+  End;
+  Board.BoardIterator_Destroy(It);
+  PCBServer.PostProcess;
+  L.SaveToFile(RUTA_TMP + 'designadores.tsv');
+  Log('  designadores: ' + IntToStr(L.Count));
+  L.Free;
+  GuardarPlaca(Doc);
+  Log('  guardada');
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ Ubica los designadores segun designadores_plan.tsv: designador, visible (0/1), rotacion y centro deseado del texto
+  (0,1 um). Se gira el texto y despues se desplaza para que el centro de su rectangulo caiga en el punto pedido. }
+Procedure DesignadoresUbicar;
+Var
+  Doc, Board, C, T : Variant;
+  L, F, Salida : TStringList;
+  R : TCoordRect;
+  I, J, X0, Y0, DX, DY, N, NVis : Integer;
+Begin
+  Bitacora := TStringList.Create;
+  Log('DesignadoresUbicar ' + DateTimeToStr(Now));
+  Doc := AbrirPlaca;
+  Board := PCBServer.GetCurrentPCBBoard;
+  X0 := Board.XOrigin; Y0 := Board.YOrigin;
+  L := TStringList.Create; L.LoadFromFile(RUTA_TMP + 'designadores_plan.tsv');
+  F := TStringList.Create; F.Delimiter := #9;
+  Salida := TStringList.Create;
+  N := 0; NVis := 0;
+  PCBServer.PreProcess;
+  For I := 0 To L.Count - 1 Do
+    If L[I] <> '' Then
+    Begin
+      F.DelimitedText := L[I];
+      If F[0] = 'ID' Then
+      Begin
+        T := Nil;
+      End
+      Else
+      Begin
+        C := BuscarComp(Board, F[0]);
+        If C = Nil Then Log('  NO ENCONTRADO ' + F[0])
+        Else
+        Begin
+          C.BeginModify;
+          C.ChangeNameAutoposition(eAutoPos_Manual);
+          C.NameOn := F[1] = '1';
+          C.EndModify;
+          C.Name.BeginModify;
+          C.Name.Rotation := StrToInt(F[2]);
+          C.Name.EndModify;
+          C.Name.GraphicallyInvalidate;
+          { dos pasadas: la segunda corrige lo que el giro haya dejado sin actualizar en el rectangulo }
+          For J := 1 To 2 Do
+          Begin
+            R := C.Name.BoundingRectangle;
+            DX := X0 + U2C(StrToInt(F[3])) - (R.Left + R.Right) Div 2;
+            DY := Y0 + U2C(StrToInt(F[4])) - (R.Bottom + R.Top) Div 2;
+            C.Name.BeginModify;
+            C.Name.MoveByXY(DX, DY);
+            C.Name.EndModify;
+            C.Name.GraphicallyInvalidate;
+          End;
+          R := C.Name.BoundingRectangle;
+          Salida.Add(F[0] + #9 + F[1] + #9 + IntToStr(C2U(R.Left - X0)) + #9 + IntToStr(C2U(R.Bottom - Y0)) + #9 +
+                     IntToStr(C2U(R.Right - X0)) + #9 + IntToStr(C2U(R.Top - Y0)));
+          Inc(N);
+          If F[1] = '1' Then Inc(NVis);
+        End;
+      End;
+    End;
+  PCBServer.PostProcess;
+  Salida.SaveToFile(RUTA_TMP + 'designadores_resultado.tsv');
+  Log('  ubicados: ' + IntToStr(N) + '; visibles: ' + IntToStr(NVis));
+  L.Free; F.Free; Salida.Free;
+  GuardarPlaca(Doc);
+  Log('  guardada');
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ ---------- La misma serigrafia en las bibliotecas de huellas (para que un Update From PCB Libraries no la revierta) ----------
+  La API da en el marco de la placa solo la huella abierta en el editor; las demas aparecen desplazadas por el origen de
+  la biblioteca (50000 mil). Por eso cada huella se abre (SetState_CurrentComponent) antes de leerla o cambiarla, y los
+  tramos nuevos se agregan con Lib.Board.AddPCBObject, que los deja en la huella abierta. }
+Function RutaBibHuellas(I : Integer) : String;
+Begin
+  Case I Of
+    0 : Result := RUTA_BASE + 'altium\ELO301_G1.PcbLib';
+    1 : Result := RUTA_BASE + 'altium\C0603 - MURATA.PcbLib';
+    2 : Result := RUTA_BASE + 'altium\R0603 - YAGEO.PcbLib';
+  End;
+End;
+
+Function AbrirBibHuellas(I : Integer) : Variant;
+Var
+  Doc : Variant;
+Begin
+  Doc := Client.OpenDocument('PCBLIB', RutaBibHuellas(I));
+  Client.ShowDocument(Doc);
+  Result := Doc;
+End;
+
+Procedure CerrarBibHuellas;
+Var
+  Doc : Variant;
+  I : Integer;
+Begin
+  Bitacora := TStringList.Create;
+  Log('CerrarBibHuellas ' + DateTimeToStr(Now));
+  For I := 0 To 2 Do
+  Begin
+    Doc := Client.GetDocumentByPath(RutaBibHuellas(I));
+    If Doc <> Nil Then
+    Begin
+      Log('  ' + RutaBibHuellas(I) + ' modificada=' + BoolToStr(Doc.Modified, True));
+      Client.CloseDocument(Doc);
+    End;
+  End;
+  Terminar;
+  Bitacora.Free;
+End;
+
+Var
+  HFp : Array[0..39] Of Variant;
+  HN : Integer;
+
+{ Huellas de la biblioteca abierta, en el orden del iterador }
+Procedure ListarHuellas(Lib : Variant);
+Var
+  It, Fp : Variant;
+Begin
+  HN := 0;
+  It := Lib.LibraryIterator_Create;
+  It.SetState_FilterAll;
+  Fp := It.FirstPCBObject;
+  While Fp <> Nil Do Begin HFp[HN] := Fp; Inc(HN); Fp := It.NextPCBObject; End;
+  Lib.LibraryIterator_Destroy(It);
+End;
+
+{ Vuelca pads y serigrafia de cada huella (coordenadas desde el origen de la biblioteca, en 0,1 um) a huellas.tsv }
+Procedure VolcarHuellas;
+Var
+  Doc, Lib, Fp, GIt, P : Variant;
+  L : TStringList;
+  I, K, X0, Y0 : Integer;
+Begin
+  Bitacora := TStringList.Create;
+  Log('VolcarHuellas ' + DateTimeToStr(Now));
+  L := TStringList.Create;
+  For I := 0 To 2 Do
+  Begin
+    Doc := AbrirBibHuellas(I);
+    Lib := PCBServer.GetCurrentPCBLibrary;
+    X0 := Lib.Board.XOrigin; Y0 := Lib.Board.YOrigin;
+    ListarHuellas(Lib);
+    For K := 0 To HN - 1 Do
+    Begin
+      Fp := HFp[K];
+      Lib.SetState_CurrentComponent(Fp);
+      L.Add('FP' + #9 + IntToStr(I) + #9 + Fp.Name);
+      GIt := Fp.GroupIterator_Create;
+      GIt.AddFilter_ObjectSet(MkSet(ePadObject, eTrackObject, eArcObject));
+      P := GIt.FirstPCBObject;
+      While P <> Nil Do
+      Begin
+        If P.ObjectId = ePadObject Then
+          L.Add('PAD' + #9 + IntToStr(C2U(P.x - X0)) + #9 + IntToStr(C2U(P.y - Y0)) + #9 + IntToStr(C2U(P.TopXSize)) + #9 +
+                IntToStr(C2U(P.TopYSize)) + #9 + IntToStr(P.TopShape) + #9 + IntToStr(Round(P.Rotation * 1000)) + #9 +
+                IntToStr(C2U(P.HoleSize)) + #9 + IntToStr(P.Layer))
+        Else If P.ObjectId = eTrackObject Then
+          L.Add('TRK' + #9 + IntToStr(P.Layer) + #9 + IntToStr(C2U(P.x1 - X0)) + #9 + IntToStr(C2U(P.y1 - Y0)) + #9 +
+                IntToStr(C2U(P.x2 - X0)) + #9 + IntToStr(C2U(P.y2 - Y0)) + #9 + IntToStr(C2U(P.Width)))
+        Else If (P.Layer = eTopOverlay) Or (P.Layer = eBottomOverlay) Then
+          L.Add('ARC' + #9 + IntToStr(P.Layer) + #9 + IntToStr(C2U(P.LineWidth)));
+        P := GIt.NextPCBObject;
+      End;
+      Fp.GroupIterator_Destroy(GIt);
+    End;
+    Log('  ' + RutaBibHuellas(I) + ': ' + IntToStr(HN) + ' huellas');
+  End;
+  L.SaveToFile(RUTA_TMP + 'huellas.tsv');
+  L.Free;
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ huellas_plan.tsv: biblioteca, indice de huella (orden del iterador), capa, extremos, numero de tramos y tramos }
+Var
+  SLib, SFp : Array[0..599] Of Integer;
+
+Procedure CargarPlanHuellas;
+Var
+  L, F : TStringList;
+  I, J, Q : Integer;
+Begin
+  L := TStringList.Create;
+  L.LoadFromFile(RUTA_TMP + 'huellas_plan.tsv');
+  F := TStringList.Create;
+  F.Delimiter := #9;
+  SPN := 0; Q := 0;
+  For I := 0 To L.Count - 1 Do
+    If L[I] <> '' Then
+    Begin
+      F.DelimitedText := L[I];
+      SLib[SPN] := StrToInt(F[0]); SFp[SPN] := StrToInt(F[1]); SCapa[SPN] := StrToInt(F[2]);
+      SX1[SPN] := StrToInt(F[3]); SY1[SPN] := StrToInt(F[4]); SX2[SPN] := StrToInt(F[5]); SY2[SPN] := StrToInt(F[6]);
+      SN[SPN] := StrToInt(F[7]); SIni[SPN] := Q; SUsado[SPN] := 0;
+      For J := 0 To SN[SPN] - 1 Do
+      Begin
+        QX1[Q] := StrToInt(F[8 + 4 * J]); QY1[Q] := StrToInt(F[9 + 4 * J]);
+        QX2[Q] := StrToInt(F[10 + 4 * J]); QY2[Q] := StrToInt(F[11 + 4 * J]);
+        Inc(Q);
+      End;
+      Inc(SPN);
+    End;
+  L.Free; F.Free;
+  Log('  plan: ' + IntToStr(SPN) + ' lineas, ' + IntToStr(Q) + ' tramos');
+End;
+
+Function BuscarPlanHuella(Lib, Fp, Capa, X1, Y1, X2, Y2 : Integer) : Integer;
+Var
+  K : Integer;
+Begin
+  Result := -1;
+  For K := 0 To SPN - 1 Do
+    If (SUsado[K] = 0) And (SLib[K] = Lib) And (SFp[K] = Fp) And (SCapa[K] = Capa) Then
+      If (Igual(SX1[K], X1) And Igual(SY1[K], Y1) And Igual(SX2[K], X2) And Igual(SY2[K], Y2)) Or
+         (Igual(SX1[K], X2) And Igual(SY1[K], Y2) And Igual(SX2[K], X1) And Igual(SY2[K], Y1)) Then
+      Begin
+        SUsado[K] := 1;
+        Result := K;
+        Break;
+      End;
+End;
+
+{ Aplica huellas_plan.tsv a las tres bibliotecas de huellas y las guarda }
+Procedure AplicarHuellas;
+Var
+  Doc, Lib, Fp, GIt, T, N : Variant;
+  Lista : Array[0..199] Of Variant;
+  I, F, NL, K, J, Q, Capa, X0, Y0, NMod, NNuevas, NBorradas, NSin : Integer;
+Begin
+  Bitacora := TStringList.Create;
+  Log('AplicarHuellas ' + DateTimeToStr(Now));
+  CargarPlanHuellas;
+  For I := 0 To 2 Do
+  Begin
+    Doc := AbrirBibHuellas(I);
+    Lib := PCBServer.GetCurrentPCBLibrary;
+    X0 := Lib.Board.XOrigin; Y0 := Lib.Board.YOrigin;
+    NMod := 0; NNuevas := 0; NBorradas := 0; NSin := 0;
+    ListarHuellas(Lib);
+    For F := 0 To HN - 1 Do
+    Begin
+      Fp := HFp[F];
+      Lib.SetState_CurrentComponent(Fp);
+      NL := 0;
+      GIt := Fp.GroupIterator_Create;
+      GIt.AddFilter_ObjectSet(MkSet(eTrackObject));
+      T := GIt.FirstPCBObject;
+      While T <> Nil Do
+      Begin
+        If (T.Layer = eTopOverlay) Or (T.Layer = eBottomOverlay) Then Begin Lista[NL] := T; Inc(NL); End;
+        T := GIt.NextPCBObject;
+      End;
+      Fp.GroupIterator_Destroy(GIt);
+      For J := 0 To NL - 1 Do
+      Begin
+        T := Lista[J];
+        If T.Layer = eTopOverlay Then Capa := 33 Else Capa := 34;
+        K := BuscarPlanHuella(I, F, Capa, C2U(T.x1 - X0), C2U(T.y1 - Y0), C2U(T.x2 - X0), C2U(T.y2 - Y0));
+        If K < 0 Then
+        Begin
+          Inc(NSin);
+          Log('    sin plan en ' + Fp.Name + ': ' + MM(T.x1 - X0) + ',' + MM(T.y1 - Y0));
+          T.BeginModify; T.Width := MMsToCoord(0.18); T.EndModify;
+        End
+        Else If SN[K] = 0 Then
+          { en una biblioteca RemovePCBObject no saca la linea de la huella: la borra BorrarSedaHuellas }
+          Inc(NBorradas)
+        Else
+        Begin
+          Q := SIni[K];
+          T.BeginModify;
+          T.x1 := X0 + U2C(QX1[Q]); T.y1 := Y0 + U2C(QY1[Q]);
+          T.x2 := X0 + U2C(QX2[Q]); T.y2 := Y0 + U2C(QY2[Q]);
+          T.Width := MMsToCoord(0.18);
+          T.EndModify;
+          Inc(NMod);
+          For Q := SIni[K] + 1 To SIni[K] + SN[K] - 1 Do
+          Begin
+            N := PCBServer.PCBObjectFactory(eTrackObject, eNoDimension, eCreate_Default);
+            N.x1 := X0 + U2C(QX1[Q]); N.y1 := Y0 + U2C(QY1[Q]);
+            N.x2 := X0 + U2C(QX2[Q]); N.y2 := Y0 + U2C(QY2[Q]);
+            N.Width := MMsToCoord(0.18);
+            N.Layer := T.Layer;
+            Lib.Board.AddPCBObject(N);
+            Inc(NNuevas);
+          End;
+        End;
+      End;
+    End;
+    Log('  ' + RutaBibHuellas(I) + ': ' + IntToStr(HN) + ' huellas; lineas ajustadas ' + IntToStr(NMod) + ', nuevas ' + IntToStr(NNuevas) +
+        ', por borrar (BorrarSedaHuellas) ' + IntToStr(NBorradas) + ', sin plan ' + IntToStr(NSin));
+    Doc.Modified := True;
+    Client.ShowDocument(Doc);
+    ResetParameters;
+    AddStringParameter('ObjectKind', 'Document');
+    RunProcess('WorkspaceManager:SaveObject');
+    Log('  guardada');
+  End;
+  Terminar;
+  Bitacora.Free;
+End;
+
+{ Borra de las huellas las lineas que el plan elimina (las que AplicarHuellas no pudo quitar: en una biblioteca
+  RemovePCBObject no las saca de la huella). Se seleccionan en la huella abierta y se borran con Edit > Clear. }
+Procedure BorrarSedaHuellas;
+Var
+  Doc, Lib, Fp, GIt, T : Variant;
+  I, F, K, X0, Y0, NSel, NTot, NQueda : Integer;
+Begin
+  Bitacora := TStringList.Create;
+  Log('BorrarSedaHuellas ' + DateTimeToStr(Now));
+  CargarPlanHuellas;
+  For I := 0 To 2 Do
+  Begin
+    Doc := AbrirBibHuellas(I);
+    Lib := PCBServer.GetCurrentPCBLibrary;
+    X0 := Lib.Board.XOrigin; Y0 := Lib.Board.YOrigin;
+    ListarHuellas(Lib);
+    NTot := 0; NQueda := 0;
+    For F := 0 To HN - 1 Do
+    Begin
+      Fp := HFp[F];
+      Lib.SetState_CurrentComponent(Fp);
+      ResetParameters;
+      AddStringParameter('Scope', 'All');
+      RunProcess('PCB:DeSelect');
+      NSel := 0;
+      GIt := Fp.GroupIterator_Create;
+      GIt.AddFilter_ObjectSet(MkSet(eTrackObject));
+      T := GIt.FirstPCBObject;
+      While T <> Nil Do
+      Begin
+        If (T.Layer = eTopOverlay) Or (T.Layer = eBottomOverlay) Then
+        Begin
+          If T.Layer = eTopOverlay Then K := 33 Else K := 34;
+          K := BuscarPlanHuella(I, F, K, C2U(T.x1 - X0), C2U(T.y1 - Y0), C2U(T.x2 - X0), C2U(T.y2 - Y0));
+          If (K >= 0) And (SN[K] = 0) Then Begin T.Selected := True; Inc(NSel); End;
+        End;
+        T := GIt.NextPCBObject;
+      End;
+      Fp.GroupIterator_Destroy(GIt);
+      If NSel > 0 Then
+      Begin
+        ResetParameters;
+        RunProcess('PCB:Clear');
+        { cuantas lineas de serigrafia quedan en la huella }
+        K := 0;
+        GIt := Fp.GroupIterator_Create;
+        GIt.AddFilter_ObjectSet(MkSet(eTrackObject));
+        T := GIt.FirstPCBObject;
+        While T <> Nil Do Begin If (T.Layer = eTopOverlay) Or (T.Layer = eBottomOverlay) Then Inc(K); T := GIt.NextPCBObject; End;
+        Fp.GroupIterator_Destroy(GIt);
+        Log('    ' + Fp.Name + ': seleccionadas ' + IntToStr(NSel) + ', quedan ' + IntToStr(K) + ' lineas de serigrafia');
+        NTot := NTot + NSel;
+      End;
+    End;
+    If NTot > 0 Then
+    Begin
+      Doc.Modified := True;
+      Client.ShowDocument(Doc);
+      ResetParameters;
+      AddStringParameter('ObjectKind', 'Document');
+      RunProcess('WorkspaceManager:SaveObject');
+      Log('  ' + RutaBibHuellas(I) + ': borradas ' + IntToStr(NTot) + ', guardada');
+    End;
+  End;
   Terminar;
   Bitacora.Free;
 End;
