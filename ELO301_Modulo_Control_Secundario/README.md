@@ -1,74 +1,69 @@
 # ELO301 — Módulo de control secundario (Grupo 1)
 
 Esquemático y PCB en Altium Designer 26 del módulo de control secundario del resBot: la placa de expansión que va sobre la
-motherboard junto a la Radxa Zero 3W. Implementa el [Documento de Diseño v5](docs/Documento_de_Diseno_ELO301_Grupo1_v5.pdf)
-con los cambios de la [auditoría del 01/11/2026](#auditoría-01112026).
+motherboard junto a la Radxa Zero 3W. Implementa el [Documento de Diseño v6](docs/Documento_de_Diseno_ELO301_Grupo1_v6.pdf)
+(revisión 1.4; [`.docx`](docs/Documento_de_Diseno_ELO301_Grupo1_v6.docx)).
 
-## Estado (02/11/2026)
+## Estado (08/11/2026)
 
 | Ítem | Estado |
 |---|---|
-| Esquemático | 4 hojas, 70 componentes (H3/H4 nuevos) |
-| ERC | **0 errores**, 3 advertencias esperadas* |
-| Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), también en la placa. Ver [metadatos DigiKey](#metadatos-digikey-02112026) |
-| PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, 70 componentes, ruteo completo, GND en las capas 2 y 3 y pours en Top y Bottom. **DRC: 0 violaciones**. Ver [cambios de placa](#cambios-de-placa-02112026) |
-| Salidas de fabricación | Regeneradas el 04/11, con el UART J9, la serigrafía nueva y el BOM con DigiKey ([detalle](#salidas-de-fabricación-fabricacion)) |
+| Esquemático | Jerárquico: hoja superior de módulos + 4 hojas, 71 componentes ([PDF](esquematicos/ELO301_G1_Esquematico.pdf)) |
+| ERC | **0 errores**, 12 advertencias esperadas* |
+| Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), también en la placa. ActiveBOM en `altium/ELO301_G1.BomDoc` |
+| PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, ruteo completo, GND en las capas 2 y 3. **DRC: 0 violaciones**. Serigrafía completa: todas las piezas y todos los módulos identificados |
+| Salidas de fabricación | Regeneradas el 08/11 y verificadas contra la netlist ([detalle](#salidas-de-fabricación-fabricacion), [verificación](fabricacion/verificacion/)) |
 
-\* GNSS_PPS y UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU, y el nRESET del GNSS solo tiene su pull-up.
+\* 7 por puertos repetidos en una misma hoja (una red que sale por dos puntos, a propósito); 4 porque GNSS_PPS y
+UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU; 1 porque el nRESET del GNSS solo tiene su pull-up.
 
 | Hoja | Contenido |
 |---|---|
+| [00 Módulos](esquematicos/00_Modulos.png) | Hoja superior: un bloque por hoja (PODER, MCU, SENSORES, CONECTORES) con sus 29 señales entre hojas cableadas como entradas de hoja |
 | [01 Alimentación](esquematicos/01_Alimentacion.png) | 12 V con B240A en serie y TVS SMAJ15A, buck AP63205 a 5 V, LDO TLV75533 para MCU y para sensores (con ferrita), LED de encendido, divisor 100k/12k + 100 nF hacia PA1 |
-| [02 MCU](esquematicos/02_MCU.png) | STM32G431CBT6 con los 29 pines de la Tabla 9, desacoplos, VDDA con ferrita, cristal de 25 MHz (CL 10 pF, 2 × 12 pF), NRST y BOOT0 con pulsadores, LED heartbeat en PB9, UART de depuración (USART1) en PB6/PB7 |
+| [02 MCU](esquematicos/02_MCU.png) | STM32G431CBT6 con 31 E/S (Tabla 9), desacoplos, VDDA con ferrita, cristal de 25 MHz (CL 10 pF, 2 × 12 pF), NRST y BOOT0 con pulsadores, LED heartbeat en PB9, UART de depuración (USART1) en PB6/PB7 |
 | [03 Sensores](esquematicos/03_Sensores.png) | IMU BMI270 por SPI1, GNSS ATGM336H por USART2 + PPS con antena activa por U.FL (alimentada desde VCC_RF por L2), conector JST del ToF por I2C2 con pull-ups de 4,7k |
 | [04 Conectores](esquematicos/04_Conectores.png) | Expansión 1x14 (Tabla 5), SWD 1x5, UART de depuración 1x4 (J9), 4 JST XH 5P para los FOC con 33 Ω en serie, 4 agujeros M3 |
 
-## Pendientes (02/11/2026)
+## Pendientes
 
-**Antes de fabricar**
+Están en [TAREAS.md](TAREAS.md), en orden.
 
-1. ~~Regenerar las salidas de fabricación~~: hecho el 04/11, ver [salidas](#salidas-de-fabricación-fabricacion). Queda
-   decidir el C16 (sin stock en LCSC).
-2. ~~Coordinar H3/H4 con la motherboard~~: no hay un equipo de motherboard aparte.
-3. Revisar los puntos de [«Para revisar antes de mandar a fabricar»](#para-revisar-antes-de-mandar-a-fabricar): Gerber
-   Viewer de JLCPCB, rotaciones del CPL y PDF del esquemático.
+## Cambios del 08/11/2026
 
-**Documentación**
-
-4. **Documento de diseño v6** (nivel sistema, sin layout), a partir de `Documento_de_Diseno_ELO301_Grupo1_v5.docx`:
-   - Tablas 3 y 8 con los códigos de DigiKey (la v5 cotiza en Mouser).
-   - Capacitores reemplazados.
-   - Cristal ABM8-25.000MHZ-10-D1G-T con 2 × 12 pF.
-   - L2 LQW18AN47NJ00D.
-   - Tira BOOMELE.
-   - 4 perforaciones M3.
-   - Costos (Tabla 7) y fila nueva de revisión.
-5. Exportar el esquemático a PDF y regenerar las imágenes de `esquematicos/`: son anteriores a estos cambios.
-6. Actualizar o retirar `ELO301_G1_Altium_por_etapas.zip`: su etapa 5 ya no es la versión vigente.
-
-**Método del ramo (según las cápsulas del profesor)**
-
-7. **ActiveBOM:** crear el `.BomDoc` («+ Create» en el proyecto) con DigiKey como proveedor favorito, como en el
-   proyecto de referencia del profesor. Los parámetros `Supplier 1` / `Supplier Part Number 1` ya están cargados.
-8. **Huellas:** las de `ELO301_G1.PcbLib` se convirtieron desde KiCad, no con el IPC Compliant Footprint Wizard.
-   Rehacerlas con el wizard a partir de las hojas de datos de DigiKey, en especial:
-   - LGA-14: hoy cita la hoja de la BMI160.
-   - ABM8: cita la ABM8G.
-   - J1/J2: usar la huella de pin header que entregó el profesor.
-9. **Esquemático modular (jerárquico):**
-   - Hoja superior con un bloque por módulo: alimentación, MCU, sensores, sistema superior (SPI de entrada) y un canal
-     FOC repetido 4 veces con `Repeat(FOC,1,4)`.
-   - Hoy son 4 hojas planas unidas por etiquetas globales.
-   - Para no perder el ruteo, re-asociar los componentes con *Project » Component Links*.
-
-**Diseño**
-
-10. ~~Interfaz de servicio~~: resuelta con el UART de depuración J9 (ver [cambios del 04/11](#cambios-de-placa-04112026)).
-11. **Clases de red:** el ECO siempre propone quitar `Potencia` y `Alimentacion` porque solo existen en la placa.
-    Definirlas en el esquemático (directivas de clase) o reponerlas con `Placa.pas` (`ClasesDeRed`) tras cada
-    Update PCB.
-12. **Rama V3V3_SENS a la IMU:** sigue por el borde superior (~45 mm), porque el abanico SPI del MCU bloquea el camino
-    directo. Mejorarla requiere mover la IMU o reordenar capas del abanico.
+- **Esquemático jerárquico** (`generadores/jerarquia/jerarquia.py`):
+  - Las 80 etiquetas que unían hojas pasaron a 68 puertos y 12 símbolos de alimentación (GND y V3V3_MCU de la hoja 04).
+  - Cada puerto va en el extremo libre de su cable y con un ancho que no toca otro cable, porque el extremo lejano
+    también conecta.
+  - `00_Modulos.SchDoc` tiene un bloque por hoja. Los FOC quedan en un solo bloque con su bus compartido y 4 CS; con
+    `Repeat` cambiarían designadores y redes.
+  - `AllowPortNetNames=1`, para que los nombres de red no cambien.
+  - **Netlist idéntica** a la plana: 251 pines y 72 redes, comparados pin a pin.
+  - ERC en 0 errores. Los puertos del GNSS van como salida/entrada; el resto, bidireccionales.
+  - La placa se re-enlazó a los Unique ID jerárquicos (71 de 71). Así, *Update PCB* no borra ni vuelve a agregar
+    componentes.
+- **Símbolo del 1x04:** queda uno solo, `BOOMELE 2.54-1x04`, con la descripción corregida («1x4»).
+- **Serigrafía completa** (`generadores/serigrafia/completar.py`), sin tocar la del 04/11:
+  - Los 10 designadores ocultos ahora se ven: C6, C12, C19, C25, J4, R13 y H1–H4. Van en 1,0 mm, el mínimo de JLCPCB.
+  - C19 lleva una línea guía.
+  - C23 y R2 se corrieron para dejar lugar a C12 y C25.
+  - Nombre de cada módulo, como los bloques de la hoja superior: PODER, MCU, IMU, TOF, GNSS, LDO, SERVICIO, SWD,
+    UART, EXPANSION y FOC1–FOC4.
+  - Líneas de 0,18 mm que separan los módulos, cortadas donde hay máscara, tinta, vías o tornillos.
+  - DRC 0, incluida la regla Silk To Silk de 10 mil.
+  - Gerber revisado con `revisar_serigrafia.py`: todo sobre los mínimos de JLCPCB salvo un punto heredado (ver
+    [TAREAS.md](TAREAS.md)).
+- **ActiveBOM** (`generadores/digikey/activebom.py`):
+  - `ELO301_G1.BomDoc` con las opciones del proyecto del profesor.
+  - 36 líneas, con DigiKey como primera opción de compra y LCSC como segunda.
+- **Documento de diseño v6** (`generadores/documento/doc_v6.py`): UART de depuración, cristal de 10 pF, L2 bobinada,
+  4 M3, 31 E/S, diagrama de bloques, y BOM y costos con códigos DigiKey y precios LCSC. Da USD 34,43 por unidad en un
+  lote de 100.
+- **Salidas regeneradas:**
+  - PDF del esquemático (5 hojas, A4) y PNG de cada hoja y de la placa.
+  - Gerber, taladro, Pick & Place, zip, CPL y BOM.
+  - Cobre, máscara, pasta y contorno quedan geométricamente idénticos a los del 04/11; cambia solo la serigrafía
+    superior.
 
 ## Abrir el proyecto
 
@@ -226,13 +221,15 @@ El documento de diseño no define estos puntos:
   RF_IN 5,0 mm a 0,35 mm (≈ 48 Ω, ver la auditoría) con un stub de 0,4 mm hacia L2. L1 se giró 180° para que su pad SW
   mire a U1/C4, y L2 (47 nH, VCC_RF) quedó pegada a la línea de RF.
 - **Pads THT** con pila explícita (arriba / medio / abajo): en modo simple el DRC no ve el cobre de las capas internas.
-- **Designadores:** 61 visibles de 1,2 mm; el resto, ocultos porque no caben sin chocar con serigrafía o pads. La
-  serigrafía inferior lleva la identificación «ELO301 G1 v1.2 2026-11» (ver [cambios del 04/11](#cambios-de-placa-04112026)).
+- **Serigrafía:** los 71 designadores visibles: 61 de 1,2 mm y 10 de 1,0 mm (ver los [cambios del 08/11](#cambios-del-08112026)).
+  Lleva el nombre de cada módulo y separadores entre módulos. La cara inferior lleva la identificación «ELO301 G1 v1.2 2026-11».
 
 ### Salidas de fabricación (`fabricacion/`)
 
-Regeneradas el 04/11/2026 con `altium/Fabricacion.OutJob` (contenedor «Fabrication Files»). Incluyen el UART J9 y la
-serigrafía nueva, y salen de la placa con DRC 0. Las armó `generadores/herramientas/jlcpcb.py`:
+Regeneradas el 08/11/2026 con `altium/Fabricacion.OutJob` (contenedor «Fabrication Files»), desde la placa con DRC 0.
+Las armó `generadores/herramientas/jlcpcb.py`. En [`fabricacion/verificacion/`](fabricacion/verificacion/) queda la
+comparación del zip contra la netlist del esquemático (`lvs.txt`, `lvs_gerber.py`: sin abiertos ni cortos, y con la prueba
+de detección) y la revisión de la serigrafía (`serigrafia.txt`).
 
 - **`ELO301_G1_Gerber_JLCPCB.zip`, lo que se sube a JLCPCB:** 11 Gerber y el taladro. El plano GND va en positivo como
   `.G2L` (capa 2), Señal-Potencia como `.G3L` (capa 3) y el contorno como `.GKO`, los nombres que JLCPCB documenta para 4 capas.
@@ -321,7 +318,7 @@ capacidades de JLCPCB. Hallazgos, de más a menos grave:
 **Notas para firmware e integración:**
 - **TFmini-S:** viene configurado en UART. Para usarlo por I2C hay que configurarlo una vez con un adaptador USB-serie
   (`5A 05 0A 01 6A` y guardar con `5A 04 11 6F`) y después revisar su dirección con un escaneo I2C.
-- **PB4 (SPI3_MISO) y PB6 (LED):** tienen activo desde el reset el pull-down de 5,1 kΩ de «dead battery» del UCPD. Para
+- **PB4 (SPI3_MISO) y PB6 (TX de USART1 desde el 04/11):** tienen activo desde el reset el pull-down de 5,1 kΩ de «dead battery» del UCPD. Para
   quitarlo hay que poner UCPD1_DBDIS = 1 en PWR_CR3 al arrancar; en HAL es `HAL_PWREx_DisableUCPDDeadBattery()`.
 - **«Update PCB» y las clases de red:** la placa ya guarda fabricante, MPN y LCSC (se sincronizó el 01/11/2026).
   - **Riesgo:** las clases «Alimentacion» y «Potencia» existen solo en la placa y las usan las reglas `Ancho_*`, así que
@@ -345,7 +342,7 @@ capacidades de JLCPCB. Hallazgos, de más a menos grave:
 1. Revisar el zip en el «Gerber Viewer» de JLCPCB (pide una cuenta). La capa 2 debe verse como plano GND con antipads y
    alivios. Aclarar también los 4 agujeros sin metalizar que cuenta JLCPCB (el taladro tiene 2).
 2. Si se arma en JLCPCB, revisar las rotaciones del CPL en su vista previa de armado.
-3. Exportar el esquemático a PDF (`Documentacion.OutJob`; Altium se colgó al publicarlo).
+3. ~~Exportar el esquemático a PDF~~: hecho el 08/11 (`esquematicos/ELO301_G1_Esquematico.pdf`).
 
 ## Generadores
 
@@ -354,19 +351,22 @@ en una VM:
 
 - `lote*_*.txt` y `fix_*.txt`: especificaciones de símbolos y huellas.
 - `hoja_0N_*.py`: un generador por hoja.
-- `herramientas/`: el conversor KiCad → Altium, los scripts de construcción y verificación pin a pin, y `jlcpcb.py`.
+- `herramientas/`: el conversor KiCad → Altium, los scripts de construcción y verificación pin a pin, `jlcpcb.py`,
+  `lvs_gerber.py` (Gerber contra netlist), `netlist_altium.py`, `placa_kicad.py` (pads desde KiCad),
+  `render_gerber.py` y `revisar_serigrafia.py`.
+- `jerarquia/`, `serigrafia/completar.py`, `digikey/activebom.py` y `documento/`: los cambios del 08/11.
 
 **Ojo:** si una hoja se edita a mano en Altium, no hay que volver a correr su generador, porque se perderían esos
 cambios.
 
 ## Siguientes pasos
 
-1. Revisión en grupo de los cambios del 02/11 (metadatos DigiKey y placa) y de las decisiones de arriba.
-2. Los [pendientes](#pendientes-02112026), empezando por regenerar las salidas de fabricación y el documento v6.
+1. Revisión en grupo de los cambios del 08/11 y de las decisiones de arriba.
+2. Los pendientes de [TAREAS.md](TAREAS.md).
 3. Pedido de prueba (puntos de «Para revisar antes de mandar a fabricar»).
 
 ## Paquete Altium por etapas (para revisar y modificar)
 
 `ELO301_G1_Altium_por_etapas.zip`: 5 proyectos Altium completos (esquemático → PCB ruteado → nodos críticos → costura de
-GND → auditoría y fabricación), con su `LEEME.md` de importación. Abrir `ELO301_G1.PrjPcb` de la etapa deseada; **la etapa 5
-es la vigente**.
+GND → auditoría y fabricación), con su `LEEME.md` de importación. **Quedó desactualizado:** la versión vigente es la de
+`altium/` (UART J9, serigrafía completa y esquemático jerárquico).

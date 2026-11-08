@@ -1,0 +1,1112 @@
+{
+"C91606": {
+"mpn": "GRM188R61E106MA73D",
+"stock": 350738,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.0991
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.0706
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.0563
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.0456
+},
+{
+"startNumber": 2500,
+"endNumber": 3999,
+"productPrice": 0.0371
+},
+{
+"startNumber": 4000,
+"endNumber": -1,
+"productPrice": 0.0329
+}
+],
+"tipo": "expand"
+},
+"C85864": {
+"mpn": "GCM188R71H104KA57D",
+"stock": 804600,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 499,
+"productPrice": 0.0186
+},
+{
+"startNumber": 500,
+"endNumber": 1499,
+"productPrice": 0.0145
+},
+{
+"startNumber": 1500,
+"endNumber": 3999,
+"productPrice": 0.0126
+},
+{
+"startNumber": 4000,
+"endNumber": 23999,
+"productPrice": 0.011
+},
+{
+"startNumber": 24000,
+"endNumber": 47999,
+"productPrice": 0.0104
+},
+{
+"startNumber": 48000,
+"endNumber": -1,
+"productPrice": 0.0101
+}
+],
+"tipo": "expand"
+},
+"C84419": {
+"mpn": "GRM188R61A226ME15D",
+"stock": 199566,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.0921
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.0737
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.0643
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.0566
+},
+{
+"startNumber": 2500,
+"endNumber": 3999,
+"productPrice": 0.054
+},
+{
+"startNumber": 4000,
+"endNumber": -1,
+"productPrice": 0.0522
+}
+],
+"tipo": "expand"
+},
+"C85862": {
+"mpn": "GCM188R71E105KA64D",
+"stock": 57809,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 199,
+"productPrice": 0.0347
+},
+{
+"startNumber": 200,
+"endNumber": 599,
+"productPrice": 0.0278
+},
+{
+"startNumber": 600,
+"endNumber": 1999,
+"productPrice": 0.0242
+},
+{
+"startNumber": 2000,
+"endNumber": 7999,
+"productPrice": 0.0212
+},
+{
+"startNumber": 8000,
+"endNumber": 15999,
+"productPrice": 0.0201
+},
+{
+"startNumber": 16000,
+"endNumber": -1,
+"productPrice": 0.0194
+}
+],
+"tipo": "expand"
+},
+"C77045": {
+"mpn": "GRM188R61C475KE11D",
+"stock": 5462,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.2739
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.2242
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.2031
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.1765
+},
+{
+"startNumber": 2500,
+"endNumber": 3999,
+"productPrice": 0.1647
+},
+{
+"startNumber": 4000,
+"endNumber": -1,
+"productPrice": 0.1575
+}
+],
+"tipo": "expand"
+},
+"C38523": {
+"mpn": "CL10C120JB8NNNC",
+"stock": 553260,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 499,
+"productPrice": 0.0113
+},
+{
+"startNumber": 500,
+"endNumber": 1499,
+"productPrice": 0.009
+},
+{
+"startNumber": 1500,
+"endNumber": 3999,
+"productPrice": 0.0081
+},
+{
+"startNumber": 4000,
+"endNumber": 23999,
+"productPrice": 0.0068
+},
+{
+"startNumber": 24000,
+"endNumber": 47999,
+"productPrice": 0.0065
+},
+{
+"startNumber": 48000,
+"endNumber": -1,
+"productPrice": 0.0063
+}
+],
+"tipo": "base"
+},
+"C92506": {
+"mpn": "B240A-13-F",
+"stock": 134372,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.0789
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.063
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.0552
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.0493
+},
+{
+"startNumber": 2500,
+"endNumber": 4999,
+"productPrice": 0.0435
+},
+{
+"startNumber": 5000,
+"endNumber": -1,
+"productPrice": 0.0412
+}
+],
+"tipo": "expand"
+},
+"C110520": {
+"mpn": "SMAJ15A-13-F",
+"stock": 12233,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.1319
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.1021
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.0871
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.076
+},
+{
+"startNumber": 2500,
+"endNumber": 4999,
+"productPrice": 0.067
+},
+{
+"startNumber": 5000,
+"endNumber": -1,
+"productPrice": 0.0625
+}
+],
+"tipo": "expand"
+},
+"C80165": {
+"mpn": "BLM18PG221SN1D",
+"stock": 238461,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 499,
+"productPrice": 0.0149
+},
+{
+"startNumber": 500,
+"endNumber": 1499,
+"productPrice": 0.0123
+},
+{
+"startNumber": 1500,
+"endNumber": 3999,
+"productPrice": 0.0108
+},
+{
+"startNumber": 4000,
+"endNumber": 23999,
+"productPrice": 0.01
+},
+{
+"startNumber": 24000,
+"endNumber": 47999,
+"productPrice": 0.0092
+},
+{
+"startNumber": 48000,
+"endNumber": -1,
+"productPrice": 0.0088
+}
+],
+"tipo": "expand"
+},
+"C2337": {
+"mpn": "2.54-1*40PStraight pin",
+"stock": 60171,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.1596
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.1334
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.1201
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.0916
+},
+{
+"startNumber": 2500,
+"endNumber": 4999,
+"productPrice": 0.0878
+},
+{
+"startNumber": 5000,
+"endNumber": -1,
+"productPrice": 0.0852
+}
+],
+"tipo": "expand"
+},
+"C157991": {
+"mpn": "B5B-XH-A(LF)(SN)",
+"stock": 79523,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.0904
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.0739
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.0655
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.0573
+},
+{
+"startNumber": 2500,
+"endNumber": 4999,
+"productPrice": 0.0524
+},
+{
+"startNumber": 5000,
+"endNumber": -1,
+"productPrice": 0.0499
+}
+],
+"tipo": "expand"
+},
+"C144395": {
+"mpn": "B4B-XH-A(LF)(SN)",
+"stock": 654109,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 99,
+"productPrice": 0.057
+},
+{
+"startNumber": 100,
+"endNumber": 499,
+"productPrice": 0.0468
+},
+{
+"startNumber": 500,
+"endNumber": 999,
+"productPrice": 0.0415
+},
+{
+"startNumber": 1000,
+"endNumber": 4999,
+"productPrice": 0.0373
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0358
+},
+{
+"startNumber": 10000,
+"endNumber": -1,
+"productPrice": 0.0348
+}
+],
+"tipo": "expand"
+},
+"C88373": {
+"mpn": "U.FL-R-SMT-1(10)",
+"stock": 21795,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.2295
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.1818
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.1585
+},
+{
+"startNumber": 500,
+"endNumber": 2499,
+"productPrice": 0.1376
+},
+{
+"startNumber": 2500,
+"endNumber": 4999,
+"productPrice": 0.1319
+},
+{
+"startNumber": 5000,
+"endNumber": -1,
+"productPrice": 0.1285
+}
+],
+"tipo": "expand"
+},
+"C780206": {
+"mpn": "SRN4018-4R7M",
+"stock": 968,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.3689
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.2984
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.268
+},
+{
+"startNumber": 500,
+"endNumber": 2999,
+"productPrice": 0.2303
+},
+{
+"startNumber": 3000,
+"endNumber": 5999,
+"productPrice": 0.1898
+},
+{
+"startNumber": 6000,
+"endNumber": -1,
+"productPrice": 0.1797
+}
+],
+"tipo": "expand"
+},
+"C98077": {
+"mpn": "LQW18AN47NJ00D",
+"stock": 4376,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 99,
+"productPrice": 0.052
+},
+{
+"startNumber": 100,
+"endNumber": 299,
+"productPrice": 0.0429
+},
+{
+"startNumber": 300,
+"endNumber": 999,
+"productPrice": 0.0383
+},
+{
+"startNumber": 1000,
+"endNumber": 3999,
+"productPrice": 0.0348
+},
+{
+"startNumber": 4000,
+"endNumber": 7999,
+"productPrice": 0.032
+},
+{
+"startNumber": 8000,
+"endNumber": -1,
+"productPrice": 0.0307
+}
+],
+"tipo": "expand"
+},
+"C125098": {
+"mpn": "LTST-C191KGKT",
+"stock": 64199,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 199,
+"productPrice": 0.0232
+},
+{
+"startNumber": 200,
+"endNumber": 599,
+"productPrice": 0.0184
+},
+{
+"startNumber": 600,
+"endNumber": 4999,
+"productPrice": 0.0158
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0134
+},
+{
+"startNumber": 10000,
+"endNumber": 19999,
+"productPrice": 0.012
+},
+{
+"startNumber": 20000,
+"endNumber": -1,
+"productPrice": 0.0113
+}
+],
+"tipo": "expand"
+},
+"C125099": {
+"mpn": "LTST-C191KRKT",
+"stock": 347347,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 199,
+"productPrice": 0.0194
+},
+{
+"startNumber": 200,
+"endNumber": 599,
+"productPrice": 0.0147
+},
+{
+"startNumber": 600,
+"endNumber": 4999,
+"productPrice": 0.0126
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.011
+},
+{
+"startNumber": 10000,
+"endNumber": 19999,
+"productPrice": 0.0104
+},
+{
+"startNumber": 20000,
+"endNumber": -1,
+"productPrice": 0.01
+}
+],
+"tipo": "expand"
+},
+"C14675": {
+"mpn": "RC0603FR-07100KL",
+"stock": 11824970,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 999,
+"productPrice": 0.0021
+},
+{
+"startNumber": 1000,
+"endNumber": 4999,
+"productPrice": 0.0016
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0013
+},
+{
+"startNumber": 10000,
+"endNumber": 49999,
+"productPrice": 0.0012
+},
+{
+"startNumber": 50000,
+"endNumber": 50199,
+"productPrice": 0.0011
+},
+{
+"startNumber": 50200,
+"endNumber": -1,
+"productPrice": 0.0011
+}
+],
+"tipo": "expand"
+},
+"C114659": {
+"mpn": "RC0603FR-0712KL",
+"stock": 1950947,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 999,
+"productPrice": 0.0045
+},
+{
+"startNumber": 1000,
+"endNumber": 4999,
+"productPrice": 0.0036
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0031
+},
+{
+"startNumber": 10000,
+"endNumber": 49999,
+"productPrice": 0.0029
+},
+{
+"startNumber": 50000,
+"endNumber": 50199,
+"productPrice": 0.0026
+},
+{
+"startNumber": 50200,
+"endNumber": -1,
+"productPrice": 0.0026
+}
+],
+"tipo": "expand"
+},
+"C22548": {
+"mpn": "RC0603FR-071KL",
+"stock": 14496509,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 999,
+"productPrice": 0.0036
+},
+{
+"startNumber": 1000,
+"endNumber": 4999,
+"productPrice": 0.0026
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0022
+},
+{
+"startNumber": 10000,
+"endNumber": 49999,
+"productPrice": 0.0019
+},
+{
+"startNumber": 50000,
+"endNumber": 50199,
+"productPrice": 0.0017
+},
+{
+"startNumber": 50200,
+"endNumber": -1,
+"productPrice": 0.0017
+}
+],
+"tipo": "expand"
+},
+"C98220": {
+"mpn": "RC0603FR-0710KL",
+"stock": 13146022,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 999,
+"productPrice": 0.0027
+},
+{
+"startNumber": 1000,
+"endNumber": 4999,
+"productPrice": 0.002
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0017
+},
+{
+"startNumber": 10000,
+"endNumber": 49999,
+"productPrice": 0.0015
+},
+{
+"startNumber": 50000,
+"endNumber": 50199,
+"productPrice": 0.0013
+},
+{
+"startNumber": 50200,
+"endNumber": -1,
+"productPrice": 0.0013
+}
+],
+"tipo": "expand"
+},
+"C99782": {
+"mpn": "RC0603FR-074K7L",
+"stock": 9458706,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 999,
+"productPrice": 0.0032
+},
+{
+"startNumber": 1000,
+"endNumber": 4999,
+"productPrice": 0.0023
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0019
+},
+{
+"startNumber": 10000,
+"endNumber": 49999,
+"productPrice": 0.0017
+},
+{
+"startNumber": 50000,
+"endNumber": 50199,
+"productPrice": 0.0015
+},
+{
+"startNumber": 50200,
+"endNumber": -1,
+"productPrice": 0.0015
+}
+],
+"tipo": "expand"
+},
+"C108661": {
+"mpn": "RC0603FR-0733RL",
+"stock": 986095,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 999,
+"productPrice": 0.0034
+},
+{
+"startNumber": 1000,
+"endNumber": 4999,
+"productPrice": 0.0028
+},
+{
+"startNumber": 5000,
+"endNumber": 9999,
+"productPrice": 0.0025
+},
+{
+"startNumber": 10000,
+"endNumber": 49999,
+"productPrice": 0.0023
+},
+{
+"startNumber": 50000,
+"endNumber": 50199,
+"productPrice": 0.0021
+},
+{
+"startNumber": 50200,
+"endNumber": -1,
+"productPrice": 0.0021
+}
+],
+"tipo": "expand"
+},
+"C116501": {
+"mpn": "PTS810SJM250SMTRLFS",
+"stock": 741,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 9,
+"productPrice": 0.6544
+},
+{
+"startNumber": 10,
+"endNumber": 29,
+"productPrice": 0.5298
+},
+{
+"startNumber": 30,
+"endNumber": 99,
+"productPrice": 0.4691
+},
+{
+"startNumber": 100,
+"endNumber": 499,
+"productPrice": 0.4068
+},
+{
+"startNumber": 500,
+"endNumber": 999,
+"productPrice": 0.3707
+},
+{
+"startNumber": 1000,
+"endNumber": -1,
+"productPrice": 0.3461
+}
+],
+"tipo": "expand"
+},
+"C2071056": {
+"mpn": "AP63205WU-7",
+"stock": 23850,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 9,
+"productPrice": 0.4625
+},
+{
+"startNumber": 10,
+"endNumber": 29,
+"productPrice": 0.3658
+},
+{
+"startNumber": 30,
+"endNumber": 99,
+"productPrice": 0.3182
+},
+{
+"startNumber": 100,
+"endNumber": 499,
+"productPrice": 0.2756
+},
+{
+"startNumber": 500,
+"endNumber": 999,
+"productPrice": 0.2526
+},
+{
+"startNumber": 1000,
+"endNumber": -1,
+"productPrice": 0.2461
+}
+],
+"tipo": "expand"
+},
+"C404027": {
+"mpn": "TLV75533PDBVR",
+"stock": 96677,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 49,
+"productPrice": 0.1219
+},
+{
+"startNumber": 50,
+"endNumber": 149,
+"productPrice": 0.0962
+},
+{
+"startNumber": 150,
+"endNumber": 499,
+"productPrice": 0.0829
+},
+{
+"startNumber": 500,
+"endNumber": 2999,
+"productPrice": 0.072
+},
+{
+"startNumber": 3000,
+"endNumber": 5999,
+"productPrice": 0.0681
+},
+{
+"startNumber": 6000,
+"endNumber": -1,
+"productPrice": 0.0657
+}
+],
+"tipo": "expand"
+},
+"C529355": {
+"mpn": "STM32G431CBT6",
+"stock": 9447,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 9,
+"productPrice": 4.7823
+},
+{
+"startNumber": 10,
+"endNumber": 29,
+"productPrice": 4.1673
+},
+{
+"startNumber": 30,
+"endNumber": 249,
+"productPrice": 3.8541
+},
+{
+"startNumber": 250,
+"endNumber": 499,
+"productPrice": 3.3834
+},
+{
+"startNumber": 500,
+"endNumber": 999,
+"productPrice": 3.2325
+},
+{
+"startNumber": 1000,
+"endNumber": -1,
+"productPrice": 3.1685
+}
+],
+"tipo": "expand"
+},
+"C2836813": {
+"mpn": "BMI270",
+"stock": 25452,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 9,
+"productPrice": 2.5978
+},
+{
+"startNumber": 10,
+"endNumber": 29,
+"productPrice": 2.3371
+},
+{
+"startNumber": 30,
+"endNumber": 99,
+"productPrice": 2.1517
+},
+{
+"startNumber": 100,
+"endNumber": 499,
+"productPrice": 1.335
+},
+{
+"startNumber": 500,
+"endNumber": 999,
+"productPrice": 1.2563
+},
+{
+"startNumber": 1000,
+"endNumber": -1,
+"productPrice": 1.2251
+}
+],
+"tipo": "expand"
+},
+"C90770": {
+"mpn": "ATGM336H-5N31",
+"stock": 4559,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 9,
+"productPrice": 3.2637
+},
+{
+"startNumber": 10,
+"endNumber": 29,
+"productPrice": 2.8996
+},
+{
+"startNumber": 30,
+"endNumber": 99,
+"productPrice": 2.6421
+},
+{
+"startNumber": 100,
+"endNumber": 499,
+"productPrice": 1.9812
+},
+{
+"startNumber": 500,
+"endNumber": 999,
+"productPrice": 1.8729
+},
+{
+"startNumber": 1000,
+"endNumber": -1,
+"productPrice": 1.8287
+}
+],
+"tipo": "expand"
+},
+"C5366868": {
+"mpn": "ABM8-25.000MHZ-10-D1G-T",
+"stock": 1405,
+"precios": [
+{
+"startNumber": 1,
+"endNumber": 9,
+"productPrice": 0.8332
+},
+{
+"startNumber": 10,
+"endNumber": 29,
+"productPrice": 0.6708
+},
+{
+"startNumber": 30,
+"endNumber": 99,
+"productPrice": 0.5888
+},
+{
+"startNumber": 100,
+"endNumber": 499,
+"productPrice": 0.5085
+},
+{
+"startNumber": 500,
+"endNumber": 999,
+"productPrice": 0.4593
+},
+{
+"startNumber": 1000,
+"endNumber": -1,
+"productPrice": 0.4347
+}
+],
+"tipo": "expand"
+}
+}

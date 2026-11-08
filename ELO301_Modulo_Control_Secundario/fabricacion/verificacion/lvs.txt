@@ -1,0 +1,63 @@
+{
+ "sin_cobre": [],
+ "solo_sch": [],
+ "abiertos": {},
+ "cortos": [],
+ "redes": 72,
+ "pines": 251,
+ "pads_fuera_de_netlist": [],
+ "flotante": [],
+ "sep_min": {
+  "GTL": [
+   0.15,
+   [
+    32.25,
+    18.69
+   ]
+  ],
+  "G3L": [
+   0.15,
+   [
+    32.12,
+    19.01
+   ]
+  ],
+  "GBL": [
+   0.15,
+   [
+    38.1,
+    1.89
+   ]
+  ]
+ },
+ "agujero_min": {
+  "metalizado": [
+   0.296,
+   "G2L",
+   56.25,
+   47.0
+  ],
+  "sin metalizar": [
+   0.291,
+   "G2L",
+   3.3,
+   38.6
+  ]
+ },
+ "roces": [],
+ "mascara": {},
+ "agujeros": {
+  "0.3 PTH": 185,
+  "0.95 PTH": 24,
+  "1.0 PTH": 23,
+  "3.2 NPTH": 4
+ },
+ "cobertura": {
+  "GTL": 77.8,
+  "G2L": 88.3,
+  "G3L": 82.3,
+  "GBL": 83.0
+ }
+}
+Prueba: al quitar una por una 40 vías de señal, 40 dieron abierto; el puente U4-1/U4-2 dio corto.
+RESULTADO: OK: 251 pines en 72 redes coinciden con el cobre de los Gerber; sin abiertos ni cortos.
