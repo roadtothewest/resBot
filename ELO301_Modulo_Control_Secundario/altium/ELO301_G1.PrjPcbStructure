@@ -1,4 +1,5 @@
-Record=TopLevelDocument|FileName=01_Alimentacion.SchDoc|SheetNumber=1
-Record=NoMainPathDocument|SourceDocument=01_Alimentacion.SchDoc|FileName=02_MCU.SchDoc|SheetNumber=2
-Record=NoMainPathDocument|SourceDocument=01_Alimentacion.SchDoc|FileName=03_Sensores.SchDoc|SheetNumber=3
-Record=NoMainPathDocument|SourceDocument=01_Alimentacion.SchDoc|FileName=04_Conectores.SchDoc|SheetNumber=4
+Record=TopLevelDocument|FileName=00_Modulos.SchDoc|SheetNumber=1
+Record=SheetSymbol|SourceDocument=00_Modulos.SchDoc|Designator=CONECTORES|SchDesignator=CONECTORES|FileName=04_Conectores.SchDoc|SheetNumber=5|SymbolType=Normal|RawFileName=04_Conectores.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=00_Modulos.SchDoc|Designator=MCU|SchDesignator=MCU|FileName=02_MCU.SchDoc|SheetNumber=3|SymbolType=Normal|RawFileName=02_MCU.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=00_Modulos.SchDoc|Designator=PODER|SchDesignator=PODER|FileName=01_Alimentacion.SchDoc|SheetNumber=2|SymbolType=Normal|RawFileName=01_Alimentacion.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=00_Modulos.SchDoc|Designator=SENSORES|SchDesignator=SENSORES|FileName=03_Sensores.SchDoc|SheetNumber=4|SymbolType=Normal|RawFileName=03_Sensores.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 

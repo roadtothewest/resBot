@@ -1,83 +1,64 @@
-# Tareas pendientes para la entrega (04/11/2026)
+# Tareas pendientes (08/11/2026)
 
 ## Para retomar en otra sesión u otro PC
 
 - **Rama:** `git checkout elo301-entrega`.
 - **Instrucción para Claude:** «lee ELO301_Modulo_Control_Secundario/TAREAS.md y el README, y sigue con el pendiente 1».
-- **Scripts de Altium:** van en `generadores/digikey/` (`correr.ps1 -Script Placa -Proc <proc>`). `RUTA_BASE` está fija
-  en `Placa.pas` y `Simbolos.pas`: hay que ajustarla a la carpeta del repo en el PC nuevo.
-- **Scripts de Python:** necesitan `pip install olefile shapely matplotlib`.
+- **Scripts de Altium:**
+  - Los de `generadores/digikey/` se corren con `correr.ps1 -Script Placa -Proc <proc>`. `RUTA_BASE` está fija en
+    `Placa.pas` y `Simbolos.pas`: hay que ajustarla a la carpeta del repo en el PC nuevo.
+  - Los de `generadores/pcb/`, `jerarquia/`, `serigrafia/completar.py` y `digikey/activebom.py` usan altium-mcp desde
+    la VM (`generadores/pcb/drc_comun.py`).
+- **Scripts de Python:** necesitan `pip install olefile shapely matplotlib lxml`.
 - **Altium:** no cerrarlo a la fuerza, porque bloquea la licencia. Si un script queda detenido en el depurador, hay que
   usar Run › Stop.
 
-Rama: `elo301-entrega`. Altium queda abierto (X2.EXE). No cerrarlo a la fuerza: bloquea la licencia.
-
 ## Hecho
 
-- **UART de depuración (PR #2, b0ingkid):**
-  - TX en PB6 y RX en PB7 (USART1). El LED de heartbeat pasa a PB9.
-  - Header J9 1x4 BOOMELE: 1 V3V3_MCU, 2 TX, 3 RX, 4 GND.
-  - La programación sigue por SWD: J2 1x5 y también J1.
-- **J9 fuera de la zona del tornillo de H1:** su courtyard se metía 1,33 mm en el radio de 3,45 mm de la M3.
-  - Se corrió 1,45 mm a la derecha y se ajustaron sus pistas en Bottom.
-  - VIN_12V en Top ahora pasa por fuera del J9.
-- **Serigrafía sobre los mínimos de JLCPCB** (línea 0,15 mm, texto 1,0 mm, pad a serigrafía 0,15 mm):
-
-  | | Valor actual |
-  |---|---|
-  | Líneas | 0,18 mm |
-  | Distancia al cobre de los pads | 0,2 mm o más |
-  | Designadores y texto de la cara inferior | 1,2 mm con trazo de 0,2 mm (1:6) |
-
-  - 61 designadores visibles. Ocultos: C6, C12, C19, C25, J4 y R13, que no caben sin pisar algo o sin quedar más
-    cerca de otra pieza del mismo tipo, más H1–H4, a propósito.
-  - Las huellas de las tres bibliotecas quedaron igual que en la placa.
-- **DRC: 0 violaciones.** Sin choques de courtyard.
-- **Salidas de `fabricacion/` regeneradas (04/11):**
-  - Gerber, taladro, Pick & Place, zip para JLCPCB y CPL con las 67 piezas.
-  - BOM con DigiKey (`generadores/digikey/bom_digikey.py`), con los LCSC verificados contra JLCPCB.
-  - La regla Silk To Solder Mask quedó en 0,15 mm.
-  - Se taparon las 3 vías del PR #2.
-  - En el esquemático volvieron los «Description» de la hoja 02 y se corrigió la descripción del J9.
-- **Decidir C16** (4,7 µF, GRM188R61C475ME11J): no tiene stock en LCSC/JLCPCB. El equivalente con stock es Samsung
-  CL10A475KO8NNNC (C19666, «Basic»). Si se arma en JLCPCB, hay que cambiarlo en `metadatos_digikey.tsv` y en el
-  esquemático.
+- **04/11:**
+  - UART de depuración J9 (PR #2), corrido fuera de la zona del tornillo de H1.
+  - Serigrafía sobre los mínimos de JLCPCB y 3 vías tapadas.
+  - BOM con DigiKey y salidas regeneradas.
+- **08/11:** detalle en el README, sección «Cambios del 08/11/2026».
+  - **Esquemático jerárquico:**
+    - Hoja superior `00_Modulos` con PODER, MCU, SENSORES y CONECTORES.
+    - Puertos en las hojas hijas y alcance de red jerárquico.
+    - Netlist idéntica a la plana y ERC con 0 errores.
+    - Placa re-enlazada a los Unique ID nuevos.
+  - **Símbolo del 1x04:** pasa a llamarse `BOOMELE 2.54-1x04`.
+  - **Serigrafía completa:**
+    - Todos los designadores visibles, con línea guía donde no caben junto a su pieza.
+    - Nombre de cada módulo y separadores.
+    - Pad a serigrafía de 0,15 mm o más, línea de 0,18 mm, texto de 1,0 mm o más. DRC 0.
+  - **ActiveBOM:** `altium/ELO301_G1.BomDoc`, con DigiKey como primera opción de compra.
+  - **Salidas regeneradas:**
+    - `esquematicos/`: PDF de 5 hojas y PNG.
+    - `fabricacion/`: Gerber, zip, CPL y BOM.
+    - `fabricacion/verificacion/`: Gerber contra netlist, sin abiertos ni cortos, y revisión de serigrafía.
+  - **Documento de diseño v6** en `docs/` (`.docx` y PDF).
+- **Huellas (antes «rehacer con el IPC Compliant Footprint Wizard»): no se rehacen.**
+  - C0603 y R0603 son las del profesor.
+  - Las demás coinciden con el fabricante o son compatibles (se contrastó el cobre).
+  - Rehacerlas después de la serigrafía y los Gerber desharía ese trabajo.
+  - **Si el grupo igual quiere la huella de pin header del profesor para J1, J2 y J9:** cambiarlas, revisar ruteo y DRC,
+    y recién después volver a correr `serigrafia/completar.py` (placa y guardar) y las salidas.
 
 ## Pendiente, en orden
 
-1. **Esquemático jerárquico con hoja superior de módulos.**
-   - Bloques:
-     - Módulo de poder (01).
-     - MCU (02).
-     - Sensores (03).
-     - Comunicaciones: SPI de entrada por J1, SWD y UART de depuración.
-     - 4 salidas SPI a los FOC, con `Repeat` o 4 bloques.
-   - Pasos:
-     - Puertos en cada hoja hija y entradas de hoja cableadas en la superior.
-     - Alcance de red jerárquico.
-     - Comparar la netlist aplanada con la actual: debe quedar idéntica.
-   - Al cambiar la jerarquía cambian los Unique ID de todos los componentes. Antes del Update PCB hay que re-enlazarlos
-     con la placa, con *Project » Component Links* o con un script que ajuste `SourceUniqueId`.
-2. **Regenerar `esquematicos/`.**
-   - PDF del esquemático completo, hoja superior incluida.
-   - PNG por hoja y de la placa.
-3. **Detalle del PR #2:** el símbolo `BOOMELE_HDR_1X04_J7` no sigue el formato de nombre `BOOMELE 2.54-1x04`.
-4. **ActiveBOM** (`.BomDoc`) con DigiKey como proveedor favorito, como en el proyecto del profesor.
-5. **Huellas con el IPC Compliant Footprint Wizard** (método del ramo).
-   - Hoy son las convertidas desde KiCad.
-   - J1, J2 y J9 deberían usar la huella de pin header del profesor.
-   - Si cambian los pads, hay que re-verificar el ruteo y el DRC.
-6. **Documento de diseño v6, solo a nivel de sistema.** Se parte de `Documento_de_Diseno_ELO301_Grupo1_v5.docx`
-   (Descargas) y se exporta a PDF en `docs/`. Cambios:
-   - BOM y costos con DigiKey (Tablas 3, 7 y 8).
-   - Capacitores reemplazados.
-   - Cristal ABM8-25.000MHZ-10-D1G-T con 2 × 12 pF.
-   - L2 LQW18AN47NJ00D.
-   - Tira BOOMELE.
-   - 4 M3.
-   - UART de depuración (Tabla 9: PB6/PB7, LED en PB9).
-   - Diagrama de módulos.
-   - Fila de revisión v6.
-7. **README.**
-   - Actualizar estado, hojas, salidas y pendientes cuando se regeneren las salidas.
-   - Retirar o actualizar `ELO301_G1_Altium_por_etapas.zip`.
+1. **Decidir C16** (4,7 µF, GRM188R61C475ME11J): no tiene stock en LCSC/JLCPCB. El equivalente con stock es Samsung
+   CL10A475KO8NNNC (C19666, «Basic»). Si se arma en JLCPCB, hay que cambiarlo en `metadatos_digikey.tsv` y en el
+   esquemático, y regenerar BOM, ActiveBOM y documento.
+2. **Serigrafía heredada a 0,17 mm del borde superior:** las carcasas de J3–J6 (huella `B5B-XH-A - JST`). Pasa el DRC y
+   JLCPCB no fija un mínimo, pero el resto de la placa respeta 0,2 mm. Se arregla recortando esa línea en la huella y en
+   la placa.
+3. **Antes de pedir:**
+   - Revisar el zip en el Gerber Viewer de JLCPCB (pide cuenta).
+   - Revisar las rotaciones del CPL en su vista previa de armado.
+4. **ActiveBOM con conexión:** abrir `ELO301_G1.BomDoc` en Altium con internet para que complete precios y stock de
+   DigiKey (sin conexión solo guarda los códigos).
+5. **CubeMX:** regenerar las Ilustraciones 3 y 4 del documento con USART1 en PB6/PB7 y el LED en PB9. Hoy son las de la
+   revisión 1.3, y el documento lo aclara.
+6. **Clases de red:** el ECO propone quitar `Potencia` y `Alimentacion` porque solo existen en la placa. Desmarcarlo en
+   cada *Update PCB* o reponerlas con `generadores/pcb/clases_red.py`.
+7. **`metadatos_digikey.tsv`:** la fila de los M3 lista H1 y H2; faltan H3 y H4. No afecta la BOM, que los excluye.
+8. **`ELO301_G1_Altium_por_etapas.zip`:** actualizarlo o retirarlo, porque ya no es la versión vigente.
