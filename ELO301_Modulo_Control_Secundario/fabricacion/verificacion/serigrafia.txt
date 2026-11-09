@@ -1,8 +1,7 @@
-arriba {'aperturas': [0.17, 0.18, 0.2], 'mascara': 0.15, 'agujero': 0.633, 'sobre_vias': 12, 'borde': 0.172, 'textos': 26, 'alto_min': 1.17}
+arriba {'aperturas': [0.17, 0.18, 0.2], 'mascara': 0.15, 'agujero': 0.633, 'sobre_vias': 12, 'borde': 0.24, 'textos': 26, 'alto_min': 1.17}
 abajo {'aperturas': [0.18, 0.2], 'mascara': 0.15, 'agujero': 0.55, 'sobre_vias': 0, 'borde': 1.131, 'textos': 0, 'alto_min': 99}
-  FALLA arriba: a 0.172 mm del borde
   prueba «línea delgada»: 1 fallas nuevas
   prueba «línea que cruza un texto»: 2 fallas nuevas
   prueba «línea sobre un pad»: 2 fallas nuevas
   prueba «línea en el borde»: 1 fallas nuevas
-RESULTADO: 1 fallas
+RESULTADO: OK

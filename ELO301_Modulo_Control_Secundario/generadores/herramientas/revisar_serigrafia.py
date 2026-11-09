@@ -20,7 +20,8 @@ MIN_LINEA, MIN_ALTO, MIN_MASCARA, MIN_SILK, MIN_BORDE, VIA = 0.15, 1.0, 0.149, 0
 
 def revisar(a, plan):
     malas = []
-    W, H = capa(a['GKO']).bounds[2:]
+    r = min(float(v) for v in re.findall(r'%ADD\d+C,([\d.]+)\*%', a['GKO'])) / 2
+    W, H = (v - r for v in capa(a['GKO']).bounds[2:])  # el borde es el eje del trazo del contorno, no su orilla
     hs = taladro(a['TXT'])
     agujeros = unary_union([Point(h[0], h[1]).buffer(h[2] / 2) for h in hs if h[2] > VIA])
     vias = [Point(h[0], h[1]).buffer(h[2] / 2) for h in hs if h[2] <= VIA]  # tapadas con máscara (lo exige lvs_gerber.py): la tinta se imprime encima

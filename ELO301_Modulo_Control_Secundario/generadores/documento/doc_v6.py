@@ -6,6 +6,8 @@ v5, out, fbom, fprecios, fimg = sys.argv[1:6]
 if os.path.exists(out): shutil.rmtree(out)
 shutil.copytree(v5, out)
 shutil.copy(fimg, os.path.join(out, 'word', 'media', 'image2.png'))
+for f in ('cubemx_pinout.png', 'cubemx_system.png'):  # Ilustraciones 3 y 4, de generadores/cubemx/capturas.py
+    shutil.copy(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'cubemx', f), os.path.join(out, 'word', 'media', f))
 W = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
 XS = '{http://www.w3.org/XML/1998/namespace}space'
 arbol = etree.parse(os.path.join(out, 'word', 'document.xml'))
@@ -103,7 +105,7 @@ cambiar(76, 'del ATGM336H (USART2).', 'del ATGM336H (USART2); consola de depurac
 cambiar(97, 'por el enlace SPI.', 'por el enlace SPI; en el banco de pruebas, también por la consola de USART1.')
 cambiar(104, 'y responda una trama de prueba por el enlace SPI.', 'responda una trama de prueba por el enlace SPI y envíe un mensaje por la UART de depuración (J9).')
 cambiar(137, 'La Ilustración 3 muestra los 29 pines utilizados, la Ilustración 4 los periféricos habilitados y la Tabla 9 la conexión de cada uno.',
-        'La Ilustración 3 muestra la asignación de pines, la Ilustración 4 los periféricos habilitados y la Tabla 9 la conexión de cada uno. Las ilustraciones corresponden a la revisión 1.3 (29 pines); la Tabla 9 ya incluye la USART1 de depuración (PB6/PB7) y el LED heartbeat en PB9, agregados en la revisión 1.4.')
+        'La Ilustración 3 muestra la asignación de pines, la Ilustración 4 los periféricos habilitados y la Tabla 9 la conexión de cada uno, con la USART1 de depuración (PB6/PB7) y el LED heartbeat en PB9 de la revisión 1.4.')
 t9 = 142
 fila_nueva(t9, fila_buscar(t9, 'USART2'), ['USART1', 'Asíncrono', 'PB6, PB7', 'UART de depuración (J9)'])
 k = fila_buscar(t9, 'GPIO')

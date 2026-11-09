@@ -4,18 +4,18 @@ Esquemático y PCB en Altium Designer 26 del módulo de control secundario del r
 motherboard junto a la Radxa Zero 3W. Implementa el [Documento de Diseño v6](docs/Documento_de_Diseno_ELO301_Grupo1_v6.pdf)
 (revisión 1.4; [`.docx`](docs/Documento_de_Diseno_ELO301_Grupo1_v6.docx)).
 
-## Estado (08/11/2026)
+## Estado (09/11/2026)
 
 | Ítem | Estado |
 |---|---|
 | Esquemático | Jerárquico: hoja superior de módulos + 4 hojas, 71 componentes ([PDF](esquematicos/ELO301_G1_Esquematico.pdf)) |
-| ERC | **0 errores**, 12 advertencias esperadas* |
-| Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), también en la placa. ActiveBOM en `altium/ELO301_G1.BomDoc` |
-| PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, ruteo completo, GND en las capas 2 y 3. **DRC: 0 violaciones**. Serigrafía completa: todas las piezas y todos los módulos identificados |
-| Salidas de fabricación | Regeneradas el 08/11 y verificadas contra la netlist ([detalle](#salidas-de-fabricación-fabricacion), [verificación](fabricacion/verificacion/)) |
+| ERC | **0 errores y 0 advertencias** (3 pines con No ERC*) |
+| Componentes | Cada uno con huella, valor, fabricante, número de parte y código DigiKey (LCSC como segundo proveedor), también en la placa. ActiveBOM en `altium/ELO301_G1.BomDoc`: con internet muestra precio y stock en vivo |
+| PCB (`ELO301_G1.PcbDoc`) | 4 capas, 70 x 50 mm, ruteo completo, GND en las capas 2 y 3. **DRC: 0 violaciones**. Serigrafía completa, a 0,24 mm o más del borde |
+| Salidas de fabricación | Regeneradas el 09/11, verificadas contra la netlist y revisadas en JLCPCB ([detalle](#salidas-de-fabricación-fabricacion), [verificación](fabricacion/verificacion/)) |
 
-\* 7 por puertos repetidos en una misma hoja (una red que sale por dos puntos, a propósito); 4 porque GNSS_PPS y
-UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU; 1 porque el nRESET del GNSS solo tiene su pull-up.
+\* PA0 y PA3 del MCU (U4-8, U4-11) son E/S usadas como entrada y las maneja una salida del GNSS (PPS y TX); el RESET_N
+del GNSS (U6-9) solo tiene su pull-up R9. Altium avisa en los tres casos, aunque el circuito es correcto.
 
 | Hoja | Contenido |
 |---|---|
@@ -28,6 +28,47 @@ UART_GNSS_RX llevan salidas del GNSS a pines E/S del MCU; 1 porque el nRESET del
 ## Pendientes
 
 Están en [TAREAS.md](TAREAS.md), en orden.
+
+## Cambios del 09/11/2026
+
+- **ERC sin advertencias** (`generadores/jerarquia/jerarquia.py unificar`):
+  - Las redes con dos o más puertos en una misma hoja quedan con uno solo: NRST, I2C_TOF_SDA/SCL, VIN_12V, SWDIO,
+    SWCLK y SPI_FOC_MISO. Los demás tramos recuperan su etiqueta de red, que se une por nombre dentro de la hoja.
+  - No ERC en los 3 pines de la nota del estado.
+  - `revisar` cuenta solo las violaciones activas, como el panel Messages.
+  - Netlist idéntica: 251 pines y 72 redes.
+- **Designadores que no quedaban guardados:**
+  - `completar.py` movía los textos con `XLocation`. Se ven bien en pantalla y salen bien en los Gerber, pero al reabrir
+    el PcbDoc Altium los devolvía a su posición anterior.
+  - El PcbDoc del 08/11, abierto en Altium, mostraba 10 designadores fuera de lugar (DRC con 21 violaciones), aunque
+    los Gerber subidos estaban bien.
+  - Ahora se mueven con `MoveToXY`. Verificado reabriendo el archivo.
+- **Serigrafía en el borde** (`generadores/serigrafia/marca_xh.py`):
+  - La marca de pin 1 de J3–J6 quedaba a 0,16 mm del borde. Se bajó 0,29 mm, hasta la línea de la carcasa, en la
+    huella y en la placa.
+  - Ahora toda la serigrafía queda a 0,24 mm o más del borde.
+  - `revisar_serigrafia.py` mide hasta el eje del contorno; antes sumaba medio trazo.
+- **Bibliotecas genéricas** (`generadores/digikey/huellas_genericas.py`): CAP, RESISTOR, INDUCTOR y DIODE - GENERIC no
+  tenían huella, y Altium avisaba al generar salidas. Ahora tienen la que usa la placa (INDUCTOR, las dos).
+- **JLCPCB, con cuenta:**
+  - **Gerber Viewer:** reconoce las 11 capas (2 internas), el contorno y los 4 M3, y las dos caras se ven bien
+    ([captura](fabricacion/verificacion/jlcpcb_visor.png)).
+  - **Vista de armado:** 6 huellas tienen otro cero en JLCPCB. `jlcpcb.py` corrige la rotación del CPL (U1 270°, U2 y
+    U3 180°, U4 90°, U5 180°, U6 90°), y así el pin 1 de su modelo cae sobre nuestro pad 1
+    ([captura](fabricacion/verificacion/jlcpcb_pin1.png)). D1, D2, LED1 y LED2 quedan con la polaridad correcta.
+  - La BMI270 solo se arma en «Standard PCBA»: USD 25 por cara y rieles, porque la placa mide menos de 70 mm por lado.
+  - C16 sigue sin stock.
+  - Los conectores de inserción quedan sin marcar para el armado. JLCPCB asoció J2 y J9 a una tira de 40 pines.
+- **ActiveBOM:** abierto en Altium con internet, muestra precio y stock en vivo de cada proveedor. Por ejemplo, la
+  línea 1 tiene 260 mil unidades, desde USD 0,1133. El `.BomDoc` no guarda esos datos, igual que el del profesor.
+- **CubeMX 6.18.1:**
+  - `generadores/cubemx/ELO301_G1.ioc` sale de `ioc.py`, con la Tabla 9.
+  - `capturas.py` genera las Ilustraciones 3 y 4 del documento.
+  - El documento v6 ya no dice que esas ilustraciones son de la revisión 1.3.
+- **Salidas regeneradas:**
+  - Esquemático: PDF, y PNG de las hojas 02–04.
+  - Gerber: cambia solo la serigrafía, en las 4 marcas.
+  - CPL, imagen de la placa y verificación: LVS y serigrafía OK, con prueba de detección.
 
 ## Cambios del 08/11/2026
 
@@ -51,8 +92,8 @@ Están en [TAREAS.md](TAREAS.md), en orden.
     UART, EXPANSION y FOC1–FOC4.
   - Líneas de 0,18 mm que separan los módulos, cortadas donde hay máscara, tinta, vías o tornillos.
   - DRC 0, incluida la regla Silk To Silk de 10 mil.
-  - Gerber revisado con `revisar_serigrafia.py`: todo sobre los mínimos de JLCPCB salvo un punto heredado (ver
-    [TAREAS.md](TAREAS.md)).
+  - Gerber revisado con `revisar_serigrafia.py`: todo sobre los mínimos de JLCPCB salvo un punto heredado (resuelto el
+    09/11).
 - **ActiveBOM** (`generadores/digikey/activebom.py`):
   - `ELO301_G1.BomDoc` con las opciones del proyecto del profesor.
   - 36 líneas, con DigiKey como primera opción de compra y LCSC como segunda.
@@ -243,7 +284,8 @@ de detección) y la revisión de la serigrafía (`serigrafia.txt`).
     Samsung CL10A475KO8NNNC (C19666, pieza «Basic»), anotado en la columna Nota. Hay que decidir si se reemplaza para
     el armado en JLCPCB.
   - La única pieza «Basic» del BOM actual es C22/C23. Las demás son «Extended»: JLCPCB cobra un cargo fijo por cada tipo.
-- **`CPL_ELO301_G1_JLCPCB.csv`:** posición (mm) y rotación de las 67 piezas.
+- **`CPL_ELO301_G1_JLCPCB.csv`:** posición (mm) y rotación de las 67 piezas. En 6 huellas, la rotación va llevada al
+  cero de JLCPCB (`ROT_JLC` en `jlcpcb.py`, revisado en su vista de armado el 09/11).
 - **`Gerber/`, `NC Drill/` y `Pick Place/`:** salida directa del OutJob, para otros fabricantes (ahí el plano `.GP1` es negativo).
 - **Taladro:** en un solo archivo con `;TYPE=PLATED` / `;TYPE=NON_PLATED`.
   - Metalizados: 185 × 0,3 mm (vías), 24 × 0,95 mm y 23 × 1,0 mm.
@@ -260,8 +302,8 @@ L3 `.G3L` · L4 `.GBL`.
 **En el cotizador de JLCPCB (01/11/2026):**
 - **Reconoció:** 4 capas de 70 × 50 mm, los 12 archivos (como salida de Altium) y 233 agujeros. El agujero mínimo es de
   0,30 mm, la pista mínima de 0,20 mm y la separación mínima de 0,156 mm. Sin observaciones (`RES_OK`).
-- **A revisar:** contó 4 agujeros sin metalizar, pero el taladro tiene 2 (los M3) y el contorno no trae otros. Conviene
-  mirarlo en su «Gerber Viewer», que pide iniciar sesión.
+- **A revisar:** contó 4 agujeros sin metalizar cuando el taladro tenía 2 M3. Desde el 04/11 son 4 M3, y el
+  «Gerber Viewer» los muestra (revisado el 09/11).
 - **Render independiente (PyGerber) de `.G2L`:** plano macizo, 97 agujeros de otras redes despejados y los 136 de GND
   unidos al plano. PyGerber no dibuja la primitiva de alivio térmico, así que ahí se ven como conexión directa.
 
@@ -339,9 +381,9 @@ capacidades de JLCPCB. Hallazgos, de más a menos grave:
 
 ### Para revisar antes de mandar a fabricar
 
-1. Revisar el zip en el «Gerber Viewer» de JLCPCB (pide una cuenta). La capa 2 debe verse como plano GND con antipads y
-   alivios. Aclarar también los 4 agujeros sin metalizar que cuenta JLCPCB (el taladro tiene 2).
-2. Si se arma en JLCPCB, revisar las rotaciones del CPL en su vista previa de armado.
+1. ~~Revisar el zip en el «Gerber Viewer» de JLCPCB~~: hecho el 09/11 (11 capas, contorno y 4 M3).
+2. ~~Revisar las rotaciones del CPL en la vista previa de armado~~: hecho el 09/11; 6 huellas corregidas en `jlcpcb.py`.
+   Al pedir, marcar «Confirm Parts Placement» para que JLCPCB envíe la colocación antes de armar (J7 incluido).
 3. ~~Exportar el esquemático a PDF~~: hecho el 08/11 (`esquematicos/ELO301_G1_Esquematico.pdf`).
 
 ## Generadores
@@ -355,13 +397,14 @@ en una VM:
   `lvs_gerber.py` (Gerber contra netlist), `netlist_altium.py`, `placa_kicad.py` (pads desde KiCad),
   `render_gerber.py` y `revisar_serigrafia.py`.
 - `jerarquia/`, `serigrafia/completar.py`, `digikey/activebom.py` y `documento/`: los cambios del 08/11.
+- `cubemx/` (`.ioc` y figuras), `serigrafia/marca_xh.py` y `digikey/huellas_genericas.py`: los del 09/11.
 
 **Ojo:** si una hoja se edita a mano en Altium, no hay que volver a correr su generador, porque se perderían esos
 cambios.
 
 ## Siguientes pasos
 
-1. Revisión en grupo de los cambios del 08/11 y de las decisiones de arriba.
+1. Revisión en grupo de los cambios del 08/11 y del 09/11, y de las decisiones de arriba.
 2. Los pendientes de [TAREAS.md](TAREAS.md).
 3. Pedido de prueba (puntos de «Para revisar antes de mandar a fabricar»).
 

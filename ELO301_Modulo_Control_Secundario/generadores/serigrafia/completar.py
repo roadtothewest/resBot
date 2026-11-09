@@ -318,9 +318,10 @@ def placa():
         if t['id'].startswith('L:'):
             cod += (f"T := PCBServer.PCBObjectFactory(eTextObject, eNoDimension, eCreate_Default); T.Layer := eTopOverlay; T.Text := '{t['t']}'; T.Size := MMsToCoord({t['s'][0]}); "
                     f"T.Width := MMsToCoord({t['s'][1]}); T.Rotation := {t['rot']}; T.XLocation := {fx}({x:.4f}); T.YLocation := {fy}({y:.4f}); " + reg)
-        else:
-            cod += (f"C := Board.GetPcbComponentByRefDes('{t['id']}'); C.NameOn := True; X := C.Name; X.Size := MMsToCoord({t['s'][0]}); X.Width := MMsToCoord({t['s'][1]}); "
-                    f"X.Rotation := {t['rot']}; X.XLocation := {fx}({x:.4f}); X.YLocation := {fy}({y:.4f});\n")
+        else:  # MoveToXY, no XLocation/YLocation: así cambia la posición que guarda el componente. Con XLocation el texto
+            # se ve movido y sale bien en los Gerber, pero C.EndModify o reabrir el PcbDoc lo devuelven a la anterior.
+            cod += (f"C := Board.GetPcbComponentByRefDes('{t['id']}'); C.NameOn := True; X := C.Name; X.Size := MMsToCoord({t['s'][0]}); "
+                    f"X.Width := MMsToCoord({t['s'][1]}); X.Rotation := {t['rot']}; X.MoveToXY({fx}({x:.4f}), {fy}({y:.4f}));\n")
     # J9 con el nombre de símbolo corregido en el esquemático (BOOMELE 2.54-1x04), para que Update PCB no vea diferencias
     cod += "C := Board.GetPcbComponentByRefDes('J9'); C.SourceLibReference := 'BOOMELE 2.54-1x04'; C.SourceCompDesignItemID := 'BOOMELE 2.54-1x04';\n"
     print(correr(f"""{VARS}    T : IDispatch;

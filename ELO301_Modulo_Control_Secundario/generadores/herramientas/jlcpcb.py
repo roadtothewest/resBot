@@ -9,11 +9,15 @@ Uso: python3 jlcpcb.py <carpeta Fabricacion de Altium> <carpeta destino>
 - Verifica que el contorno parta en (0,0) igual que el taladro, que cada agujero metalizado tenga su pad en Top y Bottom y
   su antipad o alivio en el plano, que todo agujero al que llega una pista tenga pad en esa capa (también en la interna)
   y que las capas no se repitan entre sí (el OutJob viejo las mezclaba).
-- Escribe el CPL (Designator, Mid X, Mid Y, Layer, Rotation) desde el Pick and Place en CSV y mm.
+- Escribe el CPL (Designator, Mid X, Mid Y, Layer, Rotation) desde el Pick and Place en CSV y mm, con la rotación
+  llevada al cero de JLCPCB (ROT_JLC).
 """
 import csv, glob, math, os, re, sys, zipfile
 
 BASE = 'ELO301_G1'
+# Giro entre el cero de nuestras huellas (IPC/KiCad) y el de las de JLCPCB, por huella del Pick and Place. Revisado en
+# su vista de armado el 08/11/2026: con esto el pin 1 de su modelo cae sobre nuestro pad 1.
+ROT_JLC = {'LQFP-48_-_ST': -90, 'TSOT-23-6_-_DIODES': -90, 'SOT-23-5_-_TI': 180, 'LGA-14_2.5x3.0_-_BOSCH': 180, 'LCC-18_9.7x10.1_-_ZKW': 90}
 NOMBRES = {'GTL': 'GTL', 'GTS': 'GTS', 'GTO': 'GTO', 'GTP': 'GTP', 'GP1': 'G2L', 'G1': 'G3L', 'GBL': 'GBL', 'GBS': 'GBS', 'GBO': 'GBO', 'GBP': 'GBP', 'GM': 'GKO'}
 
 
@@ -100,8 +104,9 @@ def main(origen, destino):
         z.writestr(f'{BASE}.TXT', txt)
     filas = list(csv.reader(open(glob.glob(os.path.join(origen, 'Pick Place', '*.csv'))[0], encoding='latin-1')))
     i = next(k for k, f in enumerate(filas) if f and f[0] == 'Designator')
-    col = {n: filas[i].index(n) for n in ('Designator', 'Layer', 'Center-X(mm)', 'Center-Y(mm)', 'Rotation')}
-    cpl = [[f[col['Designator']], f[col['Center-X(mm)']] + 'mm', f[col['Center-Y(mm)']] + 'mm', 'Bottom' if 'Bottom' in f[col['Layer']] else 'Top', f[col['Rotation']]]
+    col = {n: filas[i].index(n) for n in ('Designator', 'Layer', 'Footprint', 'Center-X(mm)', 'Center-Y(mm)', 'Rotation')}
+    rot = lambda f: f"{(float(f[col['Rotation']]) + ROT_JLC.get(f[col['Footprint']], 0)) % 360:g}"
+    cpl = [[f[col['Designator']], f[col['Center-X(mm)']] + 'mm', f[col['Center-Y(mm)']] + 'mm', 'Bottom' if 'Bottom' in f[col['Layer']] else 'Top', rot(f)]
            for f in filas[i + 1:] if f and not f[0].startswith('H')]
     with open(os.path.join(destino, f'CPL_{BASE}_JLCPCB.csv'), 'w', newline='') as fo:
         csv.writer(fo).writerows([['Designator', 'Mid X', 'Mid Y', 'Layer', 'Rotation']] + cpl)

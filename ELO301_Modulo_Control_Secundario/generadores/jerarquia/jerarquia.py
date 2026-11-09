@@ -8,7 +8,9 @@ Se corre UNA vez sobre las hojas planas, con Altium abierto en la VM (altium-mcp
   en esa hoja hay otro puerto con el mismo nombre). Las etiquetas con nombre de alimentación (GND, V3V3_MCU en la 04)
   pasan a ser símbolos de alimentación, que son globales.
 - 00_Modulos: un símbolo de hoja por hoja hija, con sus entradas cableadas.
-Uso: jerarquia.py aplicar | jerarquia.py revisar <netlist_plana.json>
+- unificar: un solo puerto por red y hoja (si no, Altium advierte «Sheet contains duplicate ports»); los demás tramos
+  vuelven a su etiqueta, y No ERC en los pines de NO_ERC.
+Uso: jerarquia.py aplicar | jerarquia.py unificar | jerarquia.py revisar <netlist_plana.json>
 """
 import collections, json, math, os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'pcb'))
@@ -22,6 +24,10 @@ PROY = f'{L}ELO301_G1.PrjPcb'
 IO = {('03_Sensores', 'GNSS_PPS'): 1, ('03_Sensores', 'UART_GNSS_RX'): 1, ('02_MCU', 'GNSS_PPS'): 2, ('02_MCU', 'UART_GNSS_RX'): 2}
 REG = "SL.RegisterSchObjectInContainer({o}); SchServer.RobotManager.SendMessage(SL.I_ObjectAddress, c_BroadCast, SCHM_PrimitiveRegistration, {o}.I_ObjectAddress);\n"
 P = lambda x, y: f"Point({x}*10000, {y}*10000)"
+PLAN = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plan_puertos.json')
+# Advertencias del ERC que son el diseño: el pin del MCU es IO (GPIO usado como entrada) y lo maneja una salida del
+# GNSS (PPS en PA0 = U4-8, TX en PA3 = U4-11); el RESET_N del GNSS (U6-9) solo tiene su pull-up R9. No ERC en el pin.
+NO_ERC = {'02_MCU': [('U4', '8'), ('U4', '11')], '03_Sensores': [('U6', '9')]}
 
 
 def volcar():
@@ -267,6 +273,80 @@ ResultText := GetWorkspace.DM_FocusedProject.DM_ProjectFullPath;
 end;""", 300)
 
 
+def puertos():
+    """(hoja, red) -> [(x, y, ancho)] de los puertos que hay ahora en las hojas hijas."""
+    m = lambda e: f"IntToStr(({e}) div 10000)"
+    cod = "var\n    Doc, SL, It, X : IDispatch;\n    s : String;\nbegin\ns := '';\n"
+    for h in HOJAS:
+        cod += f"""Doc := Client.OpenDocument('SCH', '{L}{h}.SchDoc'); Client.ShowDocument(Doc); SL := SchServer.GetCurrentSchDocument;
+It := SL.SchIterator_Create; It.AddFilter_ObjectSet(MkSet(ePort)); X := It.FirstSchObject;
+while X <> nil do begin s := s + '{h}|' + X.Name + '|' + {m('X.Location.X')} + '|' + {m('X.Location.Y')} + '|' + {m('X.Width')} + #10; X := It.NextSchObject; end;
+SL.SchIterator_Destroy(It);
+"""
+    r = collections.defaultdict(list)
+    for l in correr(cod + "ResultText := s;\nend;", 120).splitlines():
+        h, red, *v = l.split('|'); r[(h, red)].append(tuple(map(int, v)))
+    return r
+
+
+def unificar():
+    """Una red con varias etiquetas en una hoja quedó con varios puertos ahí, y Altium advierte «Sheet contains duplicate
+    ports». Queda el de más a la izquierda (y arriba); cada tramo de esa red recupera su etiqueta original, que se une
+    por nombre con las demás de la hoja, y el puerto que queda comparte tramo con la suya. Después, los No ERC."""
+    plan, vivos, acc = json.load(open(PLAN)), puertos(), collections.defaultdict(lambda: dict(quitar=[], etiquetas=[], tramos=[]))
+    for (h, red), ps in vivos.items():
+        if len(ps) < 2: continue
+        queda, vistos = min(ps, key=lambda q: (q[0], -q[1])), set()
+        for p in (p for p in plan if p['hoja'] == h and p['red'] == red and p['ancho']):
+            dx, dy = p['dir']
+            q = [q for q in ps if tuple(p['fin']) in ((q[0], q[1]), (q[0] + q[2] * abs(dx), q[1] + q[2] * abs(dy)))]
+            assert len(q) == 1, (h, red, p['fin'], ps)
+            vistos.add(q[0]); acc[h]['etiquetas'].append((red, p['label']))
+            if q[0] != queda:
+                acc[h]['quitar'].append((red, q[0][:2]))
+                if p['corto']: acc[h]['tramos'].append(p['corto'][::-1])  # el extremo vuelve a donde estaba
+        assert vistos == set(ps), (h, red, ps)
+    cod = "var\n    Doc, SL, It, X, Q, PI, Pn : IDispatch;\n    Lista, Pines : TInterfaceList;\n    s : String;\n    i, dx, dy : Integer;\nbegin\ns := '';\n"
+    for h in HOJAS:
+        a, pines = acc.get(h, dict(quitar=[], etiquetas=[], tramos=[])), NO_ERC.get(h, [])
+        if not a['quitar'] and not pines: continue
+        cond = ' or '.join(f"((X.Name = '{red}') and (X.Location.X div 10000 = {x}) and (X.Location.Y div 10000 = {y}))" for red, (x, y) in a['quitar']) or 'False'
+        cpin = ' or '.join(f"((X.Designator.Text = '{d}') and (Pn.Designator = '{n}'))" for d, n in pines) or 'False'
+        cod += f"""Doc := Client.OpenDocument('SCH', '{L}{h}.SchDoc'); Client.ShowDocument(Doc); SL := SchServer.GetCurrentSchDocument;
+Lista := TInterfaceList.Create; Pines := TInterfaceList.Create;
+It := SL.SchIterator_Create; It.AddFilter_ObjectSet(MkSet(ePort, eSchComponent)); X := It.FirstSchObject;
+while X <> nil do begin
+  if X.ObjectId = ePort then begin if {cond} then Lista.Add(X); end
+  else begin
+    PI := X.SchIterator_Create; PI.AddFilter_ObjectSet(MkSet(ePin)); Pn := PI.FirstSchObject;
+    while Pn <> nil do begin if {cpin} then Pines.Add(Pn); Pn := PI.NextSchObject; end;
+    X.SchIterator_Destroy(PI);
+  end;
+  X := It.NextSchObject;
+end;
+SL.SchIterator_Destroy(It);
+SchServer.ProcessControl.PreProcess(SL, '');
+for i := 0 to Lista.Count - 1 do SL.RemoveSchObject(Lista.Items[i]);
+"""
+        for (a1, b1), (c1, e1) in a['tramos']:
+            cod += (f"It := SL.SchIterator_Create; It.AddFilter_ObjectSet(MkSet(eWire)); X := It.FirstSchObject;\n"
+                    f"while X <> nil do begin for i := 1 to X.VerticesCount do if (X.Vertex[i].X div 10000 = {a1}) and (X.Vertex[i].Y div 10000 = {b1}) then "
+                    f"X.SetState_Vertex(i, {P(c1, e1)}); X := It.NextSchObject; end;\nSL.SchIterator_Destroy(It);\n")
+        for red, (x, y) in a['etiquetas']:
+            cod += f"Q := SchServer.SchObjectFactory(eNetLabel, eCreate_Default); Q.Location := {P(x, y)}; Q.Text := '{red}'; Q.Orientation := 0;\n" + REG.format(o='Q')
+        # el extremo eléctrico del pin es Location + PinLength en la dirección de Orientation
+        cod += """for i := 0 to Pines.Count - 1 do begin
+  Pn := Pines.Items[i]; dx := 0; dy := 0;
+  if Pn.Orientation = 0 then dx := 1 else if Pn.Orientation = 1 then dy := 1 else if Pn.Orientation = 2 then dx := -1 else dy := -1;
+  Q := SchServer.SchObjectFactory(eNoERC, eCreate_Default); Q.Location := Point(Pn.Location.X + dx * Pn.PinLength, Pn.Location.Y + dy * Pn.PinLength);
+""" + REG.format(o='Q') + "end;\n"
+        cod += f"""SchServer.ProcessControl.PostProcess(SL, '');
+Doc.SetModified(True); Doc.DoFileSave('');
+s := s + '{h}: puertos quitados ' + IntToStr(Lista.Count) + ', etiquetas {len(a['etiquetas'])}, No ERC ' + IntToStr(Pines.Count) + #10;
+"""
+    return correr(cod + "ResultText := s;\nend;", 300)
+
+
 if __name__ == '__main__':
     if sys.argv[1] == 'aplicar':
         correr(f"begin GetWorkspace.DM_OpenProject('{PROY}', True); end;", 300)
@@ -274,9 +354,11 @@ if __name__ == '__main__':
         print(len(cruz), 'redes entre hojas;', sum(1 for p in plan if p['ancho']), 'puertos,', sum(p['potencia'] for p in plan), 'alimentación,',
               'tramos acortados', [(p['hoja'][:2], p['red']) for p in plan if p['corto']],
               'etiquetas que quedan', [(p['hoja'][:2], p['red']) for p in plan if not p['potencia'] and not p['ancho']])
-        json.dump(plan, open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plan_puertos.json'), 'w'), indent=0)
-        print(hijas(plan)); print(superior(cruz, plan))
+        json.dump(plan, open(PLAN, 'w'), indent=0)
+        print(hijas(plan)); print(unificar()); print(superior(cruz, plan))
         for _ in range(2): print(recargar()); print(enlazar())  # la 1.ª repone IDs; la 2.ª, ya recargada, enlaza
+    elif sys.argv[1] == 'unificar':
+        print(unificar())
     elif sys.argv[1] == 'enlazar':
         for _ in range(2): print(recargar()); print(enlazar())
     elif sys.argv[1] == 'revisar':
@@ -287,11 +369,20 @@ if __name__ == '__main__':
         a, b = json.load(open('/tmp/netlist_jer.json')), json.load(open(sys.argv[2]))
         dif = [(k, b.get(k), a.get(k)) for k in sorted(set(a) | set(b)) if a.get(k) != b.get(k)]
         print('netlist:', 'IDÉNTICA' if not dif else f'{len(dif)} diferencias {dif[:20]}')
-        # dos redes distintas con el mismo nombre no se ven en la netlist por nombre: las delata el ERC
-        sys.path.insert(0, '/mnt/sda3/vms/altium')
-        from construir_hoja import mcp
-        erc = json.loads(mcp('get_erc_violations', {}))
-        for v in erc['violations']:
-            if v['level'] != 'warning': print('ERC', v['level'], v['type'], v['detail'][:150])
-        print('ERC:', erc['errors'], 'errores,', erc['warnings'], 'advertencias')
-        sys.exit(1 if dif or erc['errors'] or erc['fatal'] else 0)
+        # dos redes distintas con el mismo nombre no se ven en la netlist por nombre: las delata el ERC. Solo cuentan las
+        # violaciones activas, como en el panel Messages (get_erc_violations del MCP suma también las de No ERC).
+        erc = correr("""var
+    Prj, V : IDispatch;
+    s : String;
+    i : Integer;
+begin
+s := ''; Prj := GetWorkspace.DM_FocusedProject; Prj.DM_Compile;
+for i := 0 to Prj.DM_ViolationCount - 1 do begin
+  V := Prj.DM_Violations(i);
+  if not V.DM_IsSuppressed then s := s + IntToStr(V.DM_ErrorLevel) + ' ' + V.DM_DescriptorString + ': ' + V.DM_DetailString + #10;
+end;
+ResultText := s;
+end;""", 300).splitlines()
+        for v in erc: print('ERC', v[:200])
+        print('ERC:', len(erc), 'violaciones activas')
+        sys.exit(1 if dif or erc else 0)
